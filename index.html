@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outils Locaux — Fusion PDF, image → PDF, compression : 100 % local, vos fichiers ne quittent jamais votre appareil</title>
+<meta name="description" content="Fusion PDF, conversion image → PDF, réduction d'image et extraction de texte : des outils 100 % locaux. Vos fichiers ne quittent jamais votre appareil. Gratuit (5 conversions/mois) ou Pro dès 9 €/mois.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Outils Locaux — Vos documents confidentiels ne voyagent plus.">
+<meta property="og:description" content="Fusion PDF, image → PDF, réduction d'image, extraction de texte : 100 % local. Vos fichiers ne quittent jamais votre appareil. Gratuit, Pro 9 €/mois, Business 19 €/mois.">
+<meta property="og:url" content="https://outils-locaux.fr/">
+<meta property="og:site_name" content="Outils Locaux">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0a0a12">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%238b5cf6'/%3E%3Cpath d='M32 14a12 12 0 0 0-12 12v6h-3a3 3 0 0 0-3 3v15a3 3 0 0 0 3 3h30a3 3 0 0 0 3-3V35a3 3 0 0 0-3-3h-3v-6a12 12 0 0 0-12-12zm-8 18v-6a8 8 0 0 1 16 0v6z' fill='%23fff'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Outils Locaux",
+  "applicationCategory": "UtilityApplication",
+  "operatingSystem": "Web",
+  "inLanguage": "fr-FR",
+  "description": "Suite d'outils image et PDF 100 % locaux : fusion PDF, conversion image en PDF, réduction d'image, extraction de texte. Vos fichiers ne quittent jamais votre appareil.",
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "Gratuit",
+      "price": "0",
+      "priceCurrency": "EUR",
+      "description": "5 conversions par mois, sans carte bancaire."
+    },
+    {
+      "@type": "Offer",
+      "name": "Pro",
+      "price": "9",
+      "priceCurrency": "EUR",
+      "description": "Conversions illimitées + lot d'images. Le plus choisi."
+    },
+    {
+      "@type": "Offer",
+      "name": "Business",
+      "price": "19",
+      "priceCurrency": "EUR",
+      "description": "Pour les équipes : comptes multiples et facturation."
+    }
+  ]
+}
+</script>
+<style>
+  :root{
+    --violet:#8b5cf6;
+    --violet-fonce:#6d28d9;
+    --violet-prof:#2e1065;
+    --peche:#ffb08a;
+    --noir:#0a0a12;
+    --noir-2:#10101c;
+    --noir-3:#171728;
+    --blanc:#f4f2ff;
+    --gris:#a8a3c0;
+    --gris-2:#6f6a8a;
+    --vert:#34d399;
+    --rouge:#f87171;
+    --rayon:18px;
+    --ombre:0 24px 60px rgba(0,0,0,.45);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--noir);
+    color:var(--blanc);
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  body::before{
+    content:'';
+    position:fixed;
+    inset:0;
+    background:
+      radial-gradient(900px 500px at 85% -5%, rgba(139,92,246,.14), transparent 60%),
+      radial-gradient(700px 420px at -10% 30%, rgba(255,176,138,.08), transparent 60%),
+      radial-gradient(600px 400px at 50% 110%, rgba(139,92,246,.10), transparent 60%);
+    pointer-events:none;
+    z-index:0;
+  }
+  .grille-fond{
+    position:fixed;
+    inset:0;
+    background-image:linear-gradient(rgba(139,92,246,.05) 1px, transparent 1px),linear-gradient(90deg, rgba(139,92,246,.05) 1px, transparent 1px);
+    background-size:44px 44px;
+    mask-image:radial-gradient(ellipse 90% 60% at 50% 0%, #000 20%, transparent 75%);
+    -webkit-mask-image:radial-gradient(ellipse 90% 60% at 50% 0%, #000 20%, transparent 75%);
+    pointer-events:none;
+    z-index:0;
+  }
+  .conteneur{
+    max-width:1140px;
+    margin:0 auto;
+    padding:0 24px;
+    position:relative;
+    z-index:1;
+  }
+  h1,h2,h3,.serif{
+    font-family:'Space Grotesk',system-ui,sans-serif;
+    line-height:1.15;
+    letter-spacing:-.02em;
+  }
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%}
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    font-weight:700;
+    font-family:'Space Grotesk',sans-serif;
+    border-radius:999px;
+    padding:15px 30px;
+    font-size:16px;
+    cursor:pointer;
+    border:2px solid transparent;
+    transition:transform .18s,box-shadow .18s,background .18s,border-color .18s;
+    white-space:nowrap;
+  }
+  .btn:hover{transform:translateY(-2px)}
+  .btn-primaire{
+    background:linear-gradient(135deg,var(--violet),var(--violet-fonce));
+    color:#fff;
+    box-shadow:0 10px 30px rgba(139,92,246,.35);
+  }
+  .btn-primaire:hover{box-shadow:0 16px 40px rgba(139,92,246,.5)}
+  .btn-secondaire{
+    background:rgba(255,255,255,.05);
+    color:var(--blanc);
+    border-color:rgba(255,255,255,.16);
+    backdrop-filter:blur(6px);
+  }
+  .btn-secondaire:hover{border-color:var(--peche);color:var(--peche)}
+  .btn-peche{
+    background:linear-gradient(135deg,var(--peche),#ff9d6b);
+    color:#2a1205;
+    box-shadow:0 10px 30px rgba(255,176,138,.25);
+  }
+  .btn-peche:hover{box-shadow:0 16px 40px rgba(255,176,138,.4)}
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(139,92,246,.12);
+    border:1px solid rgba(139,92,246,.35);
+    color:#c4b5fd;
+    border-radius:999px;
+    padding:7px 16px;
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:.04em;
+  }
+  .badge-peche{
+    background:rgba(255,176,138,.1);
+    border-color:rgba(255,176,138,.35);
+    color:var(--peche);
+  }
+  .eyebrow{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    text-transform:uppercase;
+    letter-spacing:.18em;
+    font-size:12px;
+    font-weight:700;
+    color:var(--peche);
+    margin-bottom:16px;
+  }
+  .eyebrow::before{
+    content:'';
+    width:34px;
+    height:2px;
+    background:linear-gradient(90deg,var(--violet),var(--peche));
+    border-radius:2px;
+  }
+  .titre-section{
+    font-size:clamp(30px,4.4vw,46px);
+    font-weight:700;
+    margin-bottom:14px;
+  }
+  .titre-section .gradient{
+    background:linear-gradient(90deg,var(--violet),var(--peche));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .sous-section{
+    color:var(--gris);
+    font-size:17px;
+    max-width:640px;
+  }
+  .reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.visible{opacity:1;transform:translateY(0)}
+  .d1{transition-delay:.08s}
+  .d2{transition-delay:.16s}
+  .d3{transition-delay:.24s}
+  .d4{transition-delay:.32s}
+
+  /* ---------- Navbar ---------- */
+  .nav{
+    position:sticky;
+    top:0;
+    z-index:50;
+    background:rgba(10,10,18,.82);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid rgba(255,255,255,.07);
+  }
+  .nav-inner{
+    max-width:1140px;
+    margin:0 auto;
+    padding:16px 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+  }
+  .logo{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:20px;
+  }
+  .logo-badge{
+    width:38px;
+    height:38px;
+    border-radius:11px;
+    background:linear-gradient(135deg,var(--violet),var(--violet-fonce));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 6px 18px rgba(139,92,246,.4);
+    flex-shrink:0;
+  }
+  .nav-links{
+    display:flex;
+    align-items:center;
+    gap:30px;
+    font-size:15px;
+    color:var(--gris);
+  }
+  .nav-links a{transition:color .15s}
+  .nav-links a:hover{color:var(--blanc)}
+  .nav-cta{
+    padding:10px 22px;
+    font-size:14px;
+  }
+  @media(max-width:820px){
+    .nav-links{display:none}
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    padding:110px 0 90px;
+    position:relative;
+  }
+  .hero-inner{
+    display:grid;
+    grid-template-columns:1.05fr .95fr;
+    gap:60px;
+    align-items:center;
+  }
+  .hero .badge{margin-bottom:26px}
+  .hero h1{
+    font-size:clamp(38px,5.4vw,62px);
+    font-weight:700;
+    margin-bottom:22px;
+  }
+  .hero h1 .gradient{
+    background:linear-gradient(90deg,var(--violet),var(--peche));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .hero .sous{
+    color:var(--gris);
+    font-size:18px;
+    max-width:520px;
+    margin-bottom:34px;
+  }
+  .hero .sous strong{color:var(--blanc)}
+  .hero-ctas{
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+    margin-bottom:34px;
+  }
+  .hero-gages{
+    display:flex;
+    gap:22px;
+    flex-wrap:wrap;
+    color:var(--gris);
+    font-size:13.5px;
+  }
+  .hero-gages span{display:inline-flex;align-items:center;gap:7px}
+  .hero-gages svg{flex-shrink:0}
+
+  /* Mockup fenêtre d'outil */
+  .mockup{
+    position:relative;
+    border-radius:var(--rayon);
+    background:rgba(23,23,40,.6);
+    border:1px solid rgba(255,255,255,.1);
+    box-shadow:var(--ombre);
+    overflow:hidden;
+    backdrop-filter:blur(8px);
+  }
+  .mockup-bar{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:14px 18px;
+    border-bottom:1px solid rgba(255,255,255,.07);
+    background:rgba(255,255,255,.03);
+  }
+  .mockup-bar .point{
+    width:11px;height:11px;border-radius:50%;
+  }
+  .mockup-bar .r{background:#ff5f57}
+  .mockup-bar .j{background:#febc2e}
+  .mockup-bar .v{background:#28c840}
+  .mockup-bar .url{
+    margin-left:12px;
+    flex:1;
+    background:rgba(255,255,255,.06);
+    border-radius:8px;
+    padding:5px 12px;
+    font-size:12px;
+    color:var(--gris);
+    font-family:ui-monospace,Menlo,monospace;
+  }
+  .mockup-corps{padding:22px}
+  .mockup-ligne{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:12px;
+    padding:12px 14px;
+    margin-bottom:10px;
+  }
+  .mockup-icone{
+    width:36px;height:36px;border-radius:9px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:16px;flex-shrink:0;
+  }
+  .mockup-ligne .nom{font-size:13.5px;font-weight:600}
+  .mockup-ligne .taille{font-size:11.5px;color:var(--gris-2)}
+  .mockup-ligne .stat{
+    margin-left:auto;
+    font-size:11px;
+    font-weight:700;
+    color:var(--vert);
+    background:rgba(52,211,153,.1);
+    border:1px solid rgba(52,211,153,.3);
+    padding:3px 9px;
+    border-radius:999px;
+  }
+  .mockup-cta{
+    margin-top:16px;
+    width:100%;
+    background:linear-gradient(135deg,var(--violet),var(--violet-fonce));
+    border:none;
+    color:#fff;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:15px;
+    border-radius:12px;
+    padding:15px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    box-shadow:0 10px 26px rgba(139,92,246,.3);
+  }
+  .mockup-note{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    justify-content:center;
+    margin-top:14px;
+    font-size:12px;
+    color:var(--vert);
+    font-weight:600;
+  }
+  .flottant{
+    position:absolute;
+    background:rgba(23,23,40,.92);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:14px;
+    padding:12px 16px;
+    font-size:12.5px;
+    box-shadow:0 16px 40px rgba(0,0,0,.5);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    backdrop-filter:blur(8px);
+    animation:flotter 5s ease-in-out infinite;
+  }
+  .flottant b{display:block;font-size:13px}
+  .flottant span{color:var(--gris)}
+  .flottant-1{top:-22px;left:-30px}
+  .flottant-2{bottom:-20px;right:-24px;animation-delay:2.2s}
+  @keyframes flotter{
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-9px)}
+  }
+  @media(max-width:960px){
+    .hero{padding:70px 0 60px}
+    .hero-inner{grid-template-columns:1fr;gap:54px}
+    .flottant-1{left:0}
+    .flottant-2{right:0}
+  }
+
+  /* ---------- Bandeau chiffres ---------- */
+  .chiffres{
+    border-top:1px solid rgba(255,255,255,.07);
+    border-bottom:1px solid rgba(255,255,255,.07);
+    background:rgba(255,255,255,.02);
+    padding:34px 0;
+  }
+  .chiffres-inner{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:20px;
+    text-align:center;
+  }
+  .chiffres .n{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:32px;
+    font-weight:700;
+    background:linear-gradient(90deg,var(--violet),var(--peche));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .chiffres .l{font-size:13px;color:var(--gris);margin-top:2px}
+  @media(max-width:760px){.chiffres-inner{grid-template-columns:repeat(2,1fr)}}
+
+  /* ---------- Sections communes ---------- */
+  .section{padding:96px 0}
+  .section-tete{max-width:680px;margin-bottom:54px}
+  .section-tete.centre{margin-left:auto;margin-right:auto;text-align:center}
+  .section-tete.centre .eyebrow{justify-content:center}
+  .section-tete.centre .eyebrow::before{display:none}
+  .section-tete.centre .sous-section{margin-left:auto;margin-right:auto}
+
+  /* ---------- Douleurs ---------- */
+  .douleurs-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:22px;
+  }
+  .carte-douleur{
+    position:relative;
+    background:linear-gradient(180deg,rgba(23,23,40,.7),rgba(16,16,28,.7));
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:var(--rayon);
+    padding:34px 28px 30px;
+    overflow:hidden;
+    transition:transform .25s,border-color .25s;
+  }
+  .carte-douleur:hover{transform:translateY(-6px);border-color:rgba(139,92,246,.45)}
+  .carte-douleur .num{
+    position:absolute;
+    top:6px;
+    right:18px;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:74px;
+    font-weight:700;
+    color:transparent;
+    -webkit-text-stroke:1px rgba(139,92,246,.25);
+    line-height:1;
+  }
+  .carte-douleur .icone{
+    width:48px;height:48px;border-radius:13px;
+    background:linear-gradient(135deg,rgba(248,113,113,.16),rgba(248,113,113,.05));
+    border:1px solid rgba(248,113,113,.3);
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:20px;
+  }
+  .carte-douleur h3{font-size:19px;margin-bottom:10px}
+  .carte-douleur p{color:var(--gris);font-size:15px}
+  @media(max-width:900px){.douleurs-grid{grid-template-columns:1fr}}
+
+  /* ---------- Étapes ---------- */
+  .etapes{
+    background:linear-gradient(180deg,rgba(23,23,40,.5),rgba(10,10,18,0));
+    border-top:1px solid rgba(255,255,255,.06);
+    border-bottom:1px solid rgba(255,255,255,.06);
+  }
+  .etapes-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:22px;
+    counter-reset:etape;
+  }
+  .carte-etape{
+    position:relative;
+    background:rgba(16,16,28,.6);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:var(--rayon);
+    padding:36px 28px 30px;
+    transition:transform .25s,border-color .25s;
+  }
+  .carte-etape:hover{transform:translateY(-6px);border-color:rgba(255,176,138,.4)}
+  .carte-etape .num-etape{
+    width:44px;height:44px;border-radius:50%;
+    background:linear-gradient(135deg,var(--violet),var(--violet-fonce));
+    color:#fff;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:18px;
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:20px;
+    box-shadow:0 8px 20px rgba(139,92,246,.35);
+  }
+  .carte-etape h3{font-size:19px;margin-bottom:10px}
+  .carte-etape p{color:var(--gris);font-size:15px}
+  .fleche-etape{
+    position:absolute;
+    top:50%;
+    right:-19px;
+    transform:translateY(-50%);
+    color:var(--peche);
+    z-index:2;
+    font-size:20px;
+  }
+  @media(max-width:900px){
+    .etapes-grid{grid-template-columns:1fr}
+    .fleche-etape{display:none}
+  }
+
+  /* ---------- Offres ---------- */
+  .offres-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:22px;
+    align-items:stretch;
+  }
+  .carte-offre{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    background:rgba(16,16,28,.7);
+    border:1px solid rgba(255,255,255,.09);
+    border-radius:20px;
+    padding:34px 30px;
+    transition:transform .25s,box-shadow .25s,border-color .25s;
+  }
+  .carte-offre:hover{transform:translateY(-6px);box-shadow:0 24px 60px rgba(0,0,0,.45)}
+  .carte-offre.populaire{
+    border:2px solid var(--violet);
+    background:linear-gradient(180deg,rgba(139,92,246,.12),rgba(16,16,28,.85));
+    box-shadow:0 24px 70px rgba(139,92,246,.22);
+  }
+  .populaire-badge{
+    position:absolute;
+    top:-14px;
+    left:50%;
+    transform:translateX(-50%);
+    background:linear-gradient(135deg,var(--peche),#ff9d6b);
+    color:#2a1205;
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    padding:6px 18px;
+    border-radius:999px;
+    white-space:nowrap;
+    box-shadow:0 8px 20px rgba(255,176,138,.35);
+  }
+  .carte-offre .nom-offre{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:17px;
+    font-weight:700;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    color:var(--peche);
+    margin-bottom:6px;
+  }
+  .carte-offre.populaire .nom-offre{color:var(--blanc)}
+  .carte-offre .prix{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:46px;
+    font-weight:700;
+    margin:10px 0 4px;
+    display:flex;
+    align-items:baseline;
+    gap:6px;
+  }
+  .carte-offre .prix .devise{font-size:20px;color:var(--gris)}
+  .carte-offre .periode{font-size:13px;color:var(--gris-2);margin-bottom:24px}
+  .carte-offre ul{list-style:none;margin-bottom:28px;flex:1}
+  .carte-offre li{
+    display:flex;
+    gap:11px;
+    align-items:flex-start;
+    padding:9px 0;
+    font-size:14.5px;
+    color:var(--gris);
+    border-bottom:1px dashed rgba(255,255,255,.08);
+  }
+  .carte-offre li:last-child{border-bottom:none}
+  .carte-offre li svg{flex-shrink:0;margin-top:3px}
+  .carte-offre li strong{color:var(--blanc);font-weight:600}
+  .carte-offre .btn{width:100%}
+  .offres-note{
+    margin-top:26px;
+    text-align:center;
+    font-size:13.5px;
+    color:var(--gris-2);
+  }
+  @media(max-width:900px){.offres-grid{grid-template-columns:1fr;max-width:460px;margin:0 auto}}
+
+  /* ---------- Formulaire ---------- */
+  .commander{
+    background:linear-gradient(180deg,rgba(23,23,40,.55),rgba(10,10,18,0));
+    border-top:1px solid rgba(255,255,255,.06);
+    border-bottom:1px solid rgba(255,255,255,.06);
+  }
+  .formulaire-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:56px;
+    align-items:start;
+  }
+  .formulaire-texte h3{font-size:24px;margin-bottom:14px}
+  .formulaire-texte p{color:var(--gris);margin-bottom:22px;font-size:15.5px}
+  .formulaire-texte .garantie{
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+    background:rgba(52,211,153,.08);
+    border:1px solid rgba(52,211,153,.25);
+    border-radius:14px;
+    padding:16px 18px;
+    font-size:14px;
+    color:#a7f3d0;
+    margin-top:10px;
+  }
+  .formulaire-texte .garantie svg{flex-shrink:0;margin-top:2px}
+  .formulaire-texte .choix-offres{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:26px;
+  }
+  .choix-offres button{
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.14);
+    color:var(--gris);
+    border-radius:999px;
+    padding:9px 18px;
+    font-size:13.5px;
+    font-weight:600;
+    font-family:'Inter',sans-serif;
+    cursor:pointer;
+    transition:all .18s;
+  }
+  .choix-offres button:hover{border-color:var(--violet);color:var(--blanc)}
+  .choix-offres button.actif{
+    background:linear-gradient(135deg,var(--violet),var(--violet-fonce));
+    border-color:transparent;
+    color:#fff;
+  }
+  .formulaire{
+    background:rgba(16,16,28,.7);
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:20px;
+    padding:34px;
+    box-shadow:var(--ombre);
+  }
+  .champ{margin-bottom:18px}
+  .champ label{
+    display:block;
+    font-size:13px;
+    font-weight:600;
+    color:var(--gris);
+    margin-bottom:7px;
+    letter-spacing:.02em;
+  }
+  .champ input,.champ select,.champ textarea{
+    width:100%;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:11px;
+    padding:13px 15px;
+    color:var(--blanc);
+    font-size:15px;
+    font-family:'Inter',sans-serif;
+    outline:none;
+    transition:border-color .18s,box-shadow .18s;
+  }
+  .champ input:focus,.champ select:focus,.champ textarea:focus{
+    border-color:var(--violet);
+    box-shadow:0 0 0 3px rgba(139,92,246,.2);
+  }
+  .champ select option{background:var(--noir-2);color:var(--blanc)}
+  .champ textarea{min-height:110px;resize:vertical}
+  .champ .erreur{
+    display:none;
+    color:var(--rouge);
+    font-size:12.5px;
+    margin-top:6px;
+  }
+  .champ.invalide input,.champ.invalide select,.champ.invalide textarea{border-color:var(--rouge)}
+  .champ.invalide .erreur{display:block}
+  .formulaire .btn{width:100%;margin-top:8px}
+  .note-envoi{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    font-size:12.5px;
+    color:var(--gris-2);
+    margin-top:16px;
+  }
+  .panneau-succes{
+    display:none;
+    background:rgba(52,211,153,.09);
+    border:1px solid rgba(52,211,153,.3);
+    border-radius:14px;
+    padding:18px;
+    color:#a7f3d0;
+    font-size:14.5px;
+    margin-top:16px;
+  }
+  .panneau-succes b{color:#d1fae5}
+  @media(max-width:900px){
+    .formulaire-grid{grid-template-columns:1fr;gap:40px}
+  }
+
+  /* ---------- 100 % local ---------- */
+  .local-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:22px;
+    margin-bottom:34px;
+  }
+  .carte-local{
+    background:rgba(16,16,28,.7);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:var(--rayon);
+    padding:30px 26px;
+    transition:transform .25s,border-color .25s;
+  }
+  .carte-local:hover{transform:translateY(-5px);border-color:rgba(139,92,246,.4)}
+  .carte-local .icone{
+    width:46px;height:46px;border-radius:12px;
+    background:linear-gradient(135deg,rgba(139,92,246,.2),rgba(139,92,246,.05));
+    border:1px solid rgba(139,92,246,.35);
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:18px;
+  }
+  .carte-local h3{font-size:17.5px;margin-bottom:9px}
+  .carte-local p{color:var(--gris);font-size:14.5px}
+  .banniere-local{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    background:linear-gradient(90deg,rgba(139,92,246,.14),rgba(255,176,138,.08));
+    border:1px solid rgba(139,92,246,.35);
+    border-radius:16px;
+    padding:20px 24px;
+    flex-wrap:wrap;
+  }
+  .banniere-local .texte{flex:1;min-width:240px}
+  .banniere-local .texte b{font-size:16px}
+  .banniere-local .texte span{color:var(--gris);font-size:14px}
+  @media(max-width:900px){.local-grid{grid-template-columns:1fr}}
+
+  /* ---------- FAQ ---------- */
+  .faq-max{max-width:780px;margin:0 auto}
+  .faq-item{
+    background:rgba(16,16,28,.6);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:14px;
+    margin-bottom:12px;
+    overflow:hidden;
+    transition:border-color .2s;
+  }
+  .faq-item.ouvert{border-color:rgba(139,92,246,.45)}
+  .faq-q{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    background:none;
+    border:none;
+    color:var(--blanc);
+    font-family:'Space Grotesk',sans-serif;
+    font-size:16.5px;
+    font-weight:600;
+    padding:20px 24px;
+    cursor:pointer;
+    text-align:left;
+  }
+  .faq-q .chevron{
+    width:28px;height:28px;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,.18);
+    display:flex;align-items:center;justify-content:center;
+    font-size:15px;
+    color:var(--peche);
+    transition:transform .25s;
+    flex-shrink:0;
+  }
+  .faq-item.ouvert .chevron{transform:rotate(45deg)}
+  .faq-r{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .35s ease;
+  }
+  .faq-r p{
+    padding:0 24px 22px;
+    color:var(--gris);
+    font-size:15px;
+  }
+
+  /* ---------- Footer ---------- */
+  .footer{
+    border-top:1px solid rgba(255,255,255,.07);
+    background:rgba(10,10,18,.8);
+    padding:54px 0 34px;
+  }
+  .footer-grid{
+    display:grid;
+    grid-template-columns:1.4fr 1fr 1fr;
+    gap:40px;
+    margin-bottom:40px;
+  }
+  .footer .logo{margin-bottom:14px}
+  .footer .desc{color:var(--gris);font-size:14px;max-width:320px}
+  .footer h4{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:14px;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    margin-bottom:16px;
+  }
+  .footer ul{list-style:none}
+  .footer li{margin-bottom:10px}
+  .footer li a{color:var(--gris);font-size:14px;transition:color .15s}
+  .footer li a:hover{color:var(--peche)}
+  .footer-bas{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:12px;
+    padding-top:26px;
+    border-top:1px solid rgba(255,255,255,.06);
+    font-size:13px;
+    color:var(--gris-2);
+  }
+  .footer-bas .securite{display:flex;align-items:center;gap:8px}
+  @media(max-width:760px){.footer-grid{grid-template-columns:1fr;gap:30px}}
+
+  @media(prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none}
+    .flottant{animation:none}
+    html{scroll-behavior:auto}
+  }
+</style>
+</head>
+<body>
+<div class="grille-fond"></div>
+
+<!-- ==================== NAVBAR ==================== -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#accueil" class="logo" aria-label="Outils Locaux — retour en haut">
+      <span class="logo-badge">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2a7 7 0 0 0-7 7v4H4a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1V9a7 7 0 0 0-7-7Zm-4 7a4 4 0 1 1 8 0v4H8V9Z" fill="#fff"/></svg>
+      </span>
+      Outils Locaux
+    </a>
+    <div class="nav-links">
+      <a href="#douleurs">Le problème</a>
+      <a href="#etapes">Comment ça marche</a>
+      <a href="#offres">Offres</a>
+      <a href="#local">100 % local</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a href="#commander" class="btn btn-primaire nav-cta">Essayer gratuitement</a>
+  </div>
+</nav>
+
+<!-- ==================== HERO ==================== -->
+<header class="hero" id="accueil">
+  <div class="conteneur">
+    <div class="hero-inner">
+      <div>
+        <span class="badge reveal visible d1">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2l8 3.5v5.6c0 5-3.4 9.6-8 10.9-4.6-1.3-8-5.9-8-10.9V5.5L12 2Z" stroke="#34d399" stroke-width="2" fill="rgba(52,211,153,.15)"/><path d="m9 12 2 2 4-4.5" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          RGPD-friendly · Aucune donnée envoyée
+        </span>
+        <h1 class="reveal d2">Vos documents confidentiels <span class="gradient">ne voyagent plus.</span></h1>
+        <p class="sous reveal d3">Fusion PDF, image → PDF, réduction d'image, extraction de texte : tout se passe <strong>dans votre navigateur</strong>. Vos fichiers ne quittent jamais votre appareil.</p>
+        <div class="hero-ctas reveal d3">
+          <a href="outil.html" class="btn btn-primaire">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 5v14m0 0 6-6m-6 6-6-6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Ouvrir les outils — c'est gratuit
+          </a>
+          <a href="#offres" class="btn btn-secondaire">Voir les offres</a>
+        </div>
+        <div class="hero-gages reveal d4">
+          <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Sans inscription</span>
+          <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg> 5 conversions gratuites / mois</span>
+          <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Aucun fichier envoyé</span>
+        </div>
+      </div>
+      <div class="reveal d3" style="position:relative">
+        <div class="mockup">
+          <div class="mockup-bar">
+            <span class="point r"></span>
+            <span class="point j"></span>
+            <span class="point v"></span>
+            <span class="url">outils-locaux.fr/outil</span>
+          </div>
+          <div class="mockup-corps">
+            <div class="mockup-ligne">
+              <span class="mockup-icone" style="background:rgba(248,113,113,.14)">📄</span>
+              <div>
+                <div class="nom">contrat-client.pdf</div>
+                <div class="taille">1,2 Mo</div>
+              </div>
+              <span class="stat">Prêt</span>
+            </div>
+            <div class="mockup-ligne">
+              <span class="mockup-icone" style="background:rgba(96,165,250,.14)">📄</span>
+              <div>
+                <div class="nom">facture-juillet.pdf</div>
+                <div class="taille">840 Ko</div>
+              </div>
+              <span class="stat">Prêt</span>
+            </div>
+            <div class="mockup-ligne">
+              <span class="mockup-icone" style="background:rgba(255,176,138,.14)">🖼️</span>
+              <div>
+                <div class="nom">signature.png</div>
+                <div class="taille">2,4 Mo</div>
+              </div>
+              <span class="stat">Prêt</span>
+            </div>
+            <button class="mockup-cta" type="button">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 5v14m0 0 6-6m-6 6-6-6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Fusionner en local
+            </button>
+            <div class="mockup-note">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Terminé en 0,4 s · 0 octet envoyé
+            </div>
+          </div>
+        </div>
+        <div class="flottant flottant-1">
+          <span style="font-size:20px">🔒</span>
+          <div><b>Traité sur votre appareil</b><span>Rien ne part sur Internet</span></div>
+        </div>
+        <div class="flottant flottant-2">
+          <span style="font-size:20px">⚡</span>
+          <div><b>Résultat instantané</b><span>Pas d'attente, pas de file d'attente</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ==================== BANDEAU CHIFFRES ==================== -->
+<div class="chiffres">
+  <div class="conteneur">
+    <div class="chiffres-inner">
+      <div class="reveal"><div class="n">4 outils</div><div class="l">fusion, conversion, compression, extraction</div></div>
+      <div class="reveal d1"><div class="n">0 octet</div><div class="l">envoyé sur un serveur</div></div>
+      <div class="reveal d2"><div class="n">100 % local</div><div class="l">tout se passe dans votre navigateur</div></div>
+      <div class="reveal d3"><div class="n">5 conversions</div><div class="l">gratuites chaque mois, sans carte</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== DOULEURS ==================== -->
+<section class="section" id="douleurs">
+  <div class="conteneur">
+    <div class="section-tete centre reveal">
+      <div class="eyebrow">Le problème</div>
+      <h2 class="titre-section">Envoyer ses documents en ligne, <span class="gradient">c'est prendre un risque.</span></h2>
+      <p class="sous-section">Contrats, factures, données clients, bulletins de paie : chaque outil « gratuit » en ligne est un upload vers un serveur que vous ne contrôlez pas.</p>
+    </div>
+    <div class="douleurs-grid">
+      <div class="carte-douleur reveal d1">
+        <div class="num">01</div>
+        <div class="icone">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3 4 6.5v5.2c0 4.9 3.4 9.4 8 10.8 4.6-1.4 8-5.9 8-10.8V6.5L12 3Z" stroke="#f87171" stroke-width="1.8"/><path d="M9.5 12.2l1.8 1.8 3.2-3.8" stroke="#f87171" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Vos fichiers partent chez des inconnus</h3>
+        <p>Fusionner deux PDF ou compresser une image « en ligne » = envoyer vos documents sur un serveur tiers. Vous ne savez ni où, ni combien de temps ils y restent.</p>
+      </div>
+      <div class="carte-douleur reveal d2">
+        <div class="num">02</div>
+        <div class="icone">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3a9 9 0 1 0 9 9" stroke="#f87171" stroke-width="1.8" stroke-linecap="round"/><path d="M12 7v5l3.5 2" stroke="#f87171" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Des outils lents et pollués de publicité</h3>
+        <p>Files d'attente, comptes à créer, publicités agressives, limites de taille arbitraires : les outils en ligne vous font payer votre temps pour un service médiocre.</p>
+      </div>
+      <div class="carte-douleur reveal d3">
+        <div class="num">03</div>
+        <div class="icone">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M9 12h6m-6 4h4M8 4h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" stroke="#f87171" stroke-width="1.8"/></svg>
+        </div>
+        <h3>Le RGPD au pied du mur</h3>
+        <p>Un client ou un employeur vous demande où sont stockées ses données ? Avec un outil cloud, la réponse est : « je ne sais pas ». Avec Outils Locaux : « nulle part, tout reste chez moi ».</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== ÉTAPES ==================== -->
+<section class="section etapes" id="etapes">
+  <div class="conteneur">
+    <div class="section-tete centre reveal">
+      <div class="eyebrow">Comment ça marche</div>
+      <h2 class="titre-section">Trois étapes, <span class="gradient">zéro prise de tête.</span></h2>
+      <p class="sous-section">Pas de compte, pas de téléchargement d'application, pas de serveur. Juste votre navigateur et vos fichiers.</p>
+    </div>
+    <div class="etapes-grid">
+      <div class="carte-etape reveal d1">
+        <span class="fleche-etape">→</span>
+        <div class="num-etape">1</div>
+        <h3>Ouvrez la page de l'outil</h3>
+        <p>Choisissez l'outil dont vous avez besoin : fusion PDF, image → PDF, réduction d'image ou extraction de texte.</p>
+      </div>
+      <div class="carte-etape reveal d2">
+        <span class="fleche-etape">→</span>
+        <div class="num-etape">2</div>
+        <h3>Déposez vos fichiers</h3>
+        <p>Glissez-déposez vos documents ou images. Ils sont lus uniquement par votre navigateur, jamais transmis ailleurs.</p>
+      </div>
+      <div class="carte-etape reveal d3">
+        <div class="num-etape">3</div>
+        <h3>Téléchargez le résultat</h3>
+        <p>Le fichier final est généré sur votre appareil en quelques secondes. Vous le téléchargez, et c'est terminé.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== OFFRES ==================== -->
+<section class="section" id="offres">
+  <div class="conteneur">
+    <div class="section-tete centre reveal">
+      <div class="eyebrow">Les offres</div>
+      <h2 class="titre-section">Un tarif simple, <span class="gradient">sans surprise.</span></h2>
+      <p class="sous-section">Commencez gratuitement. Passez au niveau supérieur quand vos besoins grandissent. Sans engagement, résiliable à tout moment.</p>
+    </div>
+    <div class="offres-grid">
+      <div class="carte-offre reveal d1">
+        <div class="nom-offre">Gratuit</div>
+        <div class="prix">0<span class="devise">€</span></div>
+        <div class="periode">pour toujours · sans carte bancaire</div>
+        <ul>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span><strong>5 conversions</strong> par mois</span></li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Les <strong>4 outils</strong> inclus</span></li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span><strong>100 % local</strong> : rien ne part de votre appareil</span></li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Fichiers jusqu'à <strong>50 Mo</strong></span></li>
+        </ul>
+        <a href="outil.html" class="btn btn-secondaire">Commencer gratuitement</a>
+      </div>
+
+      <div class="carte-offre populaire reveal d2">
+        <div class="populaire-badge">★ Le plus choisi</div>
+        <div class="nom-offre">Pro</div>
+        <div class="prix">9<span class="devise">€</span><span style="font-size:16px;color:var(--gris)">/mois</span></div>
+        <div class="periode">sans engagement · résiliable à tout moment</div>
+        <ul>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="#ffb08a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span><strong>Conversions illimitées</strong></span></li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="#ffb08a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span><strong>Lot d'images</strong> : jusqu'à 50 images à la fois</span></li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="#ffb08a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Fichiers jusqu'à <strong>500 Mo</strong></span></li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="#ffb08a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Réduction d'image <strong>par lots</strong></span></li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="#ffb08a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Support par email <strong>prioritaire</strong></span></li>
+        </ul>
+        <button class="btn btn-peche" type="button" onclick="choisirOffre('Pro')">Choisir Pro</button>
+      </div>
+
+      <div class="carte-offre reveal d3">
+        <div class="nom-offre">Business</div>
+        <div class="prix">19<span class="devise">€</span><span style="font-size:16px;color:var(--gris)">/mois</span></div>
+        <div class="periode">pour les équipes · facture fournie</div>
+        <ul>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Tout le plan <strong>Pro</strong></span></li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span><strong>Jusqu'à 5 utilisateurs</strong></span></li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Gestion des comptes par un administrateur</span></li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span><strong>Facture mensuelle</strong> pour votre comptabilité</span></li>
+        </ul>
+        <button class="btn btn-secondaire" type="button" onclick="choisirOffre('Business')">Choisir Business</button>
+      </div>
+    </div>
+    <p class="offres-note reveal">Paiement par virement ou message privé. Le déblocage des plans Pro et Business intervient sous 24 h ouvrées après confirmation.</p>
+  </div>
+</section>
+
+<!-- ==================== FORMULAIRE ==================== -->
+<section class="section commander" id="commander">
+  <div class="conteneur">
+    <div class="formulaire-grid">
+      <div class="formulaire-texte reveal">
+        <div class="eyebrow">Contact</div>
+        <h3 class="titre-section" style="font-size:clamp(26px,3.4vw,34px)">Une question, un besoin précis ?</h3>
+        <p>Écrivez-nous : nous répondons sous 24 h ouvrées. Vous pouvez aussi demander à être recontacté pour un déploiement en entreprise, une facture personnalisée ou une démo de l'offre Business.</p>
+        <div class="choix-offres" id="choix-offres">
+          <button type="button" data-val="Gratuit" onclick="choisirOffre('Gratuit')">Gratuit</button>
+          <button type="button" data-val="Pro" onclick="choisirOffre('Pro')">Pro</button>
+          <button type="button" data-val="Business" onclick="choisirOffre('Business')">Business</button>
+          <button type="button" data-val="Autre" onclick="choisirOffre('Autre')">Autre</button>
+        </div>
+        <div class="garantie">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2l8 3.5v5.6c0 5-3.4 9.6-8 10.9-4.6-1.3-8-5.9-8-10.9V5.5L12 2Z" stroke="#34d399" stroke-width="2" fill="rgba(52,211,153,.15)"/><path d="m9 12 2 2 4-4.5" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span><b>Vos coordonnées restent confidentielles.</b> Elles servent uniquement à vous répondre et ne sont jamais revendues ni partagées.</span>
+        </div>
+      </div>
+      <form class="formulaire reveal d2" id="form-contact" novalidate>
+        <div class="champ">
+          <label for="f-nom">Votre nom</label>
+          <input type="text" id="f-nom" name="name" placeholder="Marie Dupont" autocomplete="name">
+          <div class="erreur">Merci d'indiquer votre nom.</div>
+        </div>
+        <div class="champ">
+          <label for="f-email">Votre email</label>
+          <input type="email" id="f-email" name="email" placeholder="marie@entreprise.fr" autocomplete="email">
+          <div class="erreur">Merci d'indiquer un email valide.</div>
+        </div>
+        <div class="champ">
+          <label for="f-offre">Offre concernée</label>
+          <select id="f-offre" name="offre">
+            <option value="Gratuit">Gratuit</option>
+            <option value="Pro">Pro — 9 €/mois</option>
+            <option value="Business">Business — 19 €/mois</option>
+            <option value="Autre">Autre question</option>
+          </select>
+          <div class="erreur">Merci de choisir une offre.</div>
+        </div>
+        <div class="champ">
+          <label for="f-question">Votre message</label>
+          <textarea id="f-question" name="question" placeholder="Bonjour, je souhaite passer au plan Pro…"></textarea>
+          <div class="erreur">Merci d'écrire un message.</div>
+        </div>
+        <button type="submit" class="btn btn-primaire" id="btn-envoyer">
+          Envoyer ma demande
+        </button>
+        <div class="note-envoi">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 2a7 7 0 0 0-7 7v4H4a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1V9a7 7 0 0 0-7-7Z" stroke="#8b5cf6" stroke-width="1.8"/></svg>
+          Confirmation par email · paiement par virement ou message privé
+        </div>
+        <div class="panneau-succes" id="panneau-succes">
+          <b>Demande envoyée !</b> Merci <span id="succes-nom"></span>. Nous revenons vers vous sous 24 h ouvrées à l'adresse indiquée.
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 100 % LOCAL ==================== -->
+<section class="section" id="local">
+  <div class="conteneur">
+    <div class="section-tete centre reveal">
+      <div class="eyebrow">Confidentialité</div>
+      <h2 class="titre-section">100 % local — <span class="gradient">aucune donnée envoyée.</span></h2>
+      <p class="sous-section">Notre promesse est simple : vos fichiers ne quittent jamais votre appareil. Voici comment c'est techniquement possible.</p>
+    </div>
+    <div class="local-grid">
+      <div class="carte-local reveal d1">
+        <div class="icone">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M9 11V8a3 3 0 0 1 6 0v3m-8 0h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z" stroke="#c4b5fd" stroke-width="1.8"/></svg>
+        </div>
+        <h3>Le traitement a lieu dans votre navigateur</h3>
+        <p>Le code de fusion, de conversion et de compression s'exécute directement sur votre appareil. Aucun fichier n'est envoyé vers un serveur : il n'y a simplement aucun serveur dans le chemin.</p>
+      </div>
+      <div class="carte-local reveal d2">
+        <div class="icone">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M4 12a8 8 0 0 1 16 0m-10 0a2 2 0 0 1 4 0m-7 0 3.5 7a2 2 0 0 0 3.5 0l3.5-7" stroke="#c4b5fd" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Aucun cookie tiers, aucun tracking</h3>
+        <p>Pas de régie publicitaire, pas d'analyseur de comportement, pas de traceur. Les seules données conservées sont un compteur local de conversions, stocké sur votre appareil uniquement.</p>
+      </div>
+      <div class="carte-local reveal d3">
+        <div class="icone">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h10" stroke="#c4b5fd" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <h3>RGPD-friendly par conception</h3>
+        <p>Pas de transfert hors UE, pas de stockage de documents, pas de données personnelles traitées. Idéal pour les professions réglementées : avocats, comptables, RH, santé, immobilier.</p>
+      </div>
+    </div>
+    <div class="banniere-local reveal">
+      <span style="font-size:30px">🔒</span>
+      <div class="texte">
+        <b>La confidentialité n'est pas une option : c'est l'architecture.</b>
+        <br>
+        <span>Contrairement aux outils en ligne qui affichent une mention « vos fichiers sont supprimés après traitement », Outils Locaux ne reçoit jamais vos fichiers. Il n'y a rien à supprimer, rien à fuiter, rien à voler.</span>
+      </div>
+      <a href="outil.html" class="btn btn-primaire">Vérifier par vous-même</a>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FAQ ==================== -->
+<section class="section" id="faq">
+  <div class="conteneur">
+    <div class="section-tete centre reveal">
+      <div class="eyebrow">FAQ</div>
+      <h2 class="titre-section">Questions <span class="gradient">fréquentes</span></h2>
+    </div>
+    <div class="faq-max">
+      <div class="faq-item reveal">
+        <button class="faq-q" type="button">Mes fichiers sont-ils vraiment en sécurité ?<span class="chevron">+</span></button>
+        <div class="faq-r"><p>Oui. Vos fichiers sont lus uniquement par le code qui s'exécute dans votre navigateur, sur votre appareil. Aucun upload, aucun serveur, aucun stockage intermédiaire. C'est la différence fondamentale avec les outils en ligne.</p></div>
+      </div>
+      <div class="faq-item reveal d1">
+        <button class="faq-q" type="button">Que compte exactement une « conversion » ?<span class="chevron">+</span></button>
+        <div class="faq-r"><p>Une conversion = une opération réussie : une fusion de PDF, une conversion d'image en PDF, une réduction d'image ou une extraction de texte. En plan Gratuit, vous disposez de 5 conversions par mois, réinitialisées le 1er de chaque mois.</p></div>
+      </div>
+      <div class="faq-item reveal d1">
+        <button class="faq-q" type="button">Faut-il Internet pour utiliser les outils ?<span class="chevron">+</span></button>
+        <div class="faq-r"><p>Après le premier chargement de la page (qui télécharge le code des outils), tout fonctionne hors-ligne. Le traitement lui-même n'a besoin d'aucune connexion : il se déroule intégralement sur votre appareil.</p></div>
+      </div>
+      <div class="faq-item reveal d2">
+        <button class="faq-q" type="button">Pourquoi payer si tout est local ?<span class="chevron">+</span></button>
+        <div class="faq-r"><p>Le plan Gratuit est réellement utilisable, sans carte bancaire. L'abonnement Pro finance le développement des outils, le support prioritaire et les fonctions avancées (conversions illimitées, lots d'images, fichiers volumineux). Business ajoute la gestion d'équipe et la facturation.</p></div>
+      </div>
+      <div class="faq-item reveal d2">
+        <button class="faq-q" type="button">Comment s'abonner et résilier ?<span class="chevron">+</span></button>
+        <div class="faq-r"><p>Envoyez-nous un message via le formulaire ci-dessus en choisissant l'offre Pro ou Business. Le paiement se fait par virement ou message privé, et votre plan est débloqué sous 24 h ouvrées. La résiliation est possible à tout moment, sans justification.</p></div>
+      </div>
+      <div class="faq-item reveal d3">
+        <button class="faq-q" type="button">Quels types de fichiers puis-je traiter ?<span class="chevron">+</span></button>
+        <div class="faq-r"><p>PDF et images (PNG, JPG, WebP) pour les conversions et la réduction. En plan Gratuit, les fichiers sont limités à 50 Mo ; en Pro et Business, jusqu'à 500 Mo, avec traitement par lots jusqu'à 50 images.</p></div>
+      </div>
+      <div class="faq-item reveal d3">
+        <button class="faq-q" type="button">Vos outils respectent-ils le RGPD ?<span class="chevron">+</span></button>
+        <div class="faq-r"><p>Oui : aucune donnée personnelle ni aucun document ne quitte votre appareil. Il n'y a ni transfert hors UE, ni traitement de données par un tiers. C'est la configuration la plus simple possible pour la conformité RGPD.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<footer class="footer">
+  <div class="conteneur">
+    <div class="footer-grid">
+      <div>
+        <a href="#accueil" class="logo">
+          <span class="logo-badge">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2a7 7 0 0 0-7 7v4H4a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1V9a7 7 0 0 0-7-7Zm-4 7a4 4 0 1 1 8 0v4H8V9Z" fill="#fff"/></svg>
+          </span>
+          Outils Locaux
+        </a>
+        <p class="desc">La suite d'outils image et PDF 100 % locale. Vos fichiers ne quittent jamais votre appareil.</p>
+      </div>
+      <div>
+        <h4>Outils</h4>
+        <ul>
+          <li><a href="outil.html">Fusionner des PDF</a></li>
+          <li><a href="outil.html">Image → PDF</a></li>
+          <li><a href="outil.html">Réduire une image</a></li>
+          <li><a href="outil.html">Extraire le texte d'un PDF</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="#offres">Offres</a></li>
+          <li><a href="#commander">Contact</a></li>
+          <li><a href="#local">100 % local</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bas">
+      <span>© 2026 Outils Locaux — Tous droits réservés.</span>
+      <span class="securite">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2a7 7 0 0 0-7 7v4H4a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1V9a7 7 0 0 0-7-7Z" stroke="#8b5cf6" stroke-width="1.8"/></svg>
+        Aucune donnée envoyée · RGPD-friendly
+      </span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ---------- Reveal au scroll ----------
+  (function () {
+    var items = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window)) {
+      items.forEach(function (el) { el.classList.add('visible'); });
+      return;
+    }
+    var obs = new IntersectionObserver(function (entrees) {
+      entrees.forEach(function (e) {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    items.forEach(function (el) { obs.observe(el); });
+  })();
+
+  // ---------- FAQ accordéon ----------
+  (function () {
+    var items = document.querySelectorAll('.faq-item');
+    items.forEach(function (item) {
+      var q = item.querySelector('.faq-q');
+      var r = item.querySelector('.faq-r');
+      q.addEventListener('click', function () {
+        var estOuvert = item.classList.contains('ouvert');
+        items.forEach(function (autre) {
+          autre.classList.remove('ouvert');
+          autre.querySelector('.faq-r').style.maxHeight = null;
+        });
+        if (!estOuvert) {
+          item.classList.add('ouvert');
+          r.style.maxHeight = r.scrollHeight + 'px';
+        }
+      });
+    });
+  })();
+
+  // ---------- Sélection d'offre ----------
+  function choisirOffre(val) {
+    var select = document.getElementById('f-offre');
+    var btns = document.querySelectorAll('#choix-offres button');
+    if (select) {
+      var trouve = false;
+      for (var i = 0; i < select.options.length; i++) {
+        if (select.options[i].value === val) { select.selectedIndex = i; trouve = true; break; }
+      }
+      if (!trouve && val === 'Autre') select.selectedIndex = select.options.length - 1;
+    }
+    btns.forEach(function (b) { b.classList.toggle('actif', b.getAttribute('data-val') === val); });
+    var cible = document.getElementById('commander');
+    if (cible) cible.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // ---------- Pré-sélection d'offre depuis la page outils ----------
+  (function () {
+    var souhaitee = null;
+    try { souhaitee = localStorage.getItem('ol_offre_souhaitee'); } catch (e) {}
+    if (souhaitee && document.getElementById('f-offre')) {
+      var select = document.getElementById('f-offre');
+      for (var i = 0; i < select.options.length; i++) {
+        if (select.options[i].value === souhaitee) { select.selectedIndex = i; break; }
+      }
+      var btns = document.querySelectorAll('#choix-offres button');
+      btns.forEach(function (b) { b.classList.toggle('actif', b.getAttribute('data-val') === souhaitee); });
+      try { localStorage.removeItem('ol_offre_souhaitee'); } catch (e2) {}
+    }
+  })();
+
+  // ---------- Formulaire EmailJS (réel) ----------
+  (function () {
+    var form = document.getElementById('form-contact');
+    var btn = document.getElementById('btn-envoyer');
+    var panneau = document.getElementById('panneau-succes');
+    var CONFIG = {
+      serviceId: 'service_cy1ytdb',
+      templateId: 'template_xpo58cv',
+      publicKey: '8Pui4ZEqxW2jRVF7h'
+    };
+
+    function chargerEmailJS() {
+      return new Promise(function (resolve) {
+        if (window.emailjs && typeof window.emailjs.send === 'function') { resolve(); return; }
+        var s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+        s.onload = function () {
+          try { emailjs.init({ publicKey: CONFIG.publicKey }); } catch (e) {}
+          resolve();
+        };
+        s.onerror = function () { resolve(); };
+        document.head.appendChild(s);
+      });
+    }
+
+    function valider(champ) {
+      var wrapper = champ.closest('.champ');
+      var ok = true;
+      if (champ.id === 'f-nom') ok = champ.value.trim().length >= 2;
+      if (champ.id === 'f-email') ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(champ.value.trim());
+      if (champ.id === 'f-offre') ok = champ.value.length > 0;
+      if (champ.id === 'f-question') ok = champ.value.trim().length >= 10;
+      wrapper.classList.toggle('invalide', !ok);
+      return ok;
+    }
+
+    form.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      var nom = document.getElementById('f-nom').value.trim();
+      var email = document.getElementById('f-email').value.trim();
+      var offre = document.getElementById('f-offre').value;
+      var question = document.getElementById('f-question').value.trim();
+      // Valider TOUS les champs (un .every court-circuiterait aux premiers invalides)
+      var champs = ['f-nom', 'f-email', 'f-offre', 'f-question'].map(function (id) {
+        return document.getElementById(id);
+      });
+      var ok = true;
+      champs.forEach(function (champ) { if (!valider(champ)) ok = false; });
+      if (!ok) return;
+
+      var texteOriginal = btn.innerHTML;
+      btn.disabled = true;
+      btn.textContent = 'Envoi en cours…';
+
+      chargerEmailJS().then(function () {
+        if (!window.emailjs || typeof window.emailjs.send !== 'function') {
+          btn.disabled = false;
+          btn.innerHTML = texteOriginal;
+          alert('Le service d\'envoi est momentanément indisponible. Réessayez dans quelques instants.');
+          return;
+        }
+        var recap = 'Demande Outils Locaux — offre concernée : ' + offre + '.\nMessage : ' + question;
+        emailjs.send(CONFIG.serviceId, CONFIG.templateId, {
+          site: 'Outils Locaux',
+          name: nom,
+          email: email,
+          question: recap
+        }).then(function () {
+          btn.disabled = false;
+          btn.innerHTML = texteOriginal;
+          document.getElementById('succes-nom').textContent = nom;
+          panneau.style.display = 'block';
+          form.reset();
+          var btns = document.querySelectorAll('#choix-offres button');
+          btns.forEach(function (b) { b.classList.remove('actif'); });
+          panneau.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }).catch(function () {
+          btn.disabled = false;
+          btn.innerHTML = texteOriginal;
+          alert('Une erreur est survenue lors de l\'envoi. Merci de réessayer dans un instant.');
+        });
+      });
+    });
+
+    ['f-nom', 'f-email', 'f-offre', 'f-question'].forEach(function (id) {
+      var el = document.getElementById(id);
+      el.addEventListener('input', function () { el.closest('.champ').classList.remove('invalide'); });
+      el.addEventListener('change', function () { el.closest('.champ').classList.remove('invalide'); });
+    });
+  })();
+</script>
+
+<!-- Chatbot -->
+<script src="chatbot-config.js"></script>
+<script src="chatbot.js"></script>
+</body>
+</html>

@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outils Locaux — Fusion PDF, image → PDF, réduction, extraction de texte (100 % local)</title>
+<meta name="description" content="Fusionnez des PDF, convertissez des images en PDF, réduisez des images et extrayez du texte : tout se passe dans votre navigateur. Aucun fichier envoyé. 5 conversions gratuites par mois.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Outils Locaux — Vos documents ne quittent jamais votre appareil">
+<meta property="og:description" content="Fusion PDF, image → PDF, réduction d'image, extraction de texte : 100 % local, zéro envoi. 5 conversions gratuites par mois.">
+<meta name="theme-color" content="#0a0a12">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%238b5cf6'/%3E%3Cpath d='M32 14a12 12 0 0 0-12 12v6h-3a3 3 0 0 0-3 3v15a3 3 0 0 0 3 3h30a3 3 0 0 0 3-3V35a3 3 0 0 0-3-3h-3v-6a12 12 0 0 0-12-12zm-8 18v-6a8 8 0 0 1 16 0v6z' fill='%23fff'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --violet:#8b5cf6;
+    --violet-fonce:#6d28d9;
+    --peche:#ffb08a;
+    --noir:#0a0a12;
+    --noir-2:#10101c;
+    --noir-3:#171728;
+    --blanc:#f4f2ff;
+    --gris:#a8a3c0;
+    --gris-2:#6f6a8a;
+    --vert:#34d399;
+    --rouge:#f87171;
+    --rayon:18px;
+    --ombre:0 24px 60px rgba(0,0,0,.45);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:var(--noir);
+    color:var(--blanc);
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    line-height:1.6;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    overflow-x:hidden;
+  }
+  body::before{
+    content:'';
+    position:fixed;
+    inset:0;
+    background:
+      radial-gradient(900px 500px at 85% -5%, rgba(139,92,246,.14), transparent 60%),
+      radial-gradient(700px 420px at -10% 30%, rgba(255,176,138,.08), transparent 60%);
+    pointer-events:none;
+    z-index:0;
+  }
+  h1,h2,h3{font-family:'Space Grotesk','Inter',system-ui,sans-serif;line-height:1.2;letter-spacing:-.02em}
+  a{color:inherit;text-decoration:none}
+  .conteneur{max-width:1140px;margin:0 auto;padding:0 24px;width:100%;position:relative;z-index:1}
+
+  /* Navbar */
+  .nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(10,10,18,.85);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid rgba(255,255,255,.07);
+  }
+  .nav-inner{
+    max-width:1140px;margin:0 auto;padding:14px 24px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+  }
+  .logo{display:flex;align-items:center;gap:11px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:19px}
+  .logo-badge{
+    width:36px;height:36px;border-radius:10px;
+    background:linear-gradient(135deg,var(--violet),var(--violet-fonce));
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 6px 18px rgba(139,92,246,.4);flex-shrink:0;
+  }
+  .nav-droite{display:flex;align-items:center;gap:16px}
+  .compteur{
+    display:inline-flex;align-items:center;gap:8px;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:999px;
+    padding:7px 15px;
+    font-size:13px;
+    color:var(--gris);
+  }
+  .compteur b{color:var(--peche);font-weight:700}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:9px;
+    font-weight:700;font-family:'Space Grotesk',sans-serif;
+    border-radius:999px;padding:12px 24px;font-size:15px;cursor:pointer;
+    border:2px solid transparent;transition:transform .18s,box-shadow .18s,background .18s;
+    white-space:nowrap;
+  }
+  .btn:hover{transform:translateY(-2px)}
+  .btn-primaire{
+    background:linear-gradient(135deg,var(--violet),var(--violet-fonce));
+    color:#fff;box-shadow:0 10px 30px rgba(139,92,246,.35);
+  }
+  .btn-primaire:hover{box-shadow:0 16px 40px rgba(139,92,246,.5)}
+  .btn-primaire:disabled{opacity:.55;cursor:not-allowed;transform:none}
+  .btn-secondaire{
+    background:rgba(255,255,255,.05);color:var(--blanc);
+    border-color:rgba(255,255,255,.16);
+  }
+  .btn-secondaire:hover{border-color:var(--peche);color:var(--peche)}
+  .btn-peche{
+    background:linear-gradient(135deg,var(--peche),#ff9d6b);
+    color:#2a1205;box-shadow:0 10px 30px rgba(255,176,138,.25);
+  }
+  .btn-peche:hover{box-shadow:0 16px 40px rgba(255,176,138,.4)}
+
+  /* Entête page */
+  .tete-page{padding:56px 0 26px;text-align:center}
+  .tete-page h1{font-size:clamp(30px,4.2vw,44px);margin-bottom:12px}
+  .tete-page h1 .gradient{
+    background:linear-gradient(90deg,var(--violet),var(--peche));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .tete-page p{color:var(--gris);max-width:640px;margin:0 auto;font-size:16px}
+  .tete-page .garantie-local{
+    display:inline-flex;align-items:center;gap:8px;margin-top:18px;
+    background:rgba(52,211,153,.09);border:1px solid rgba(52,211,153,.3);
+    color:#a7f3d0;font-size:13.5px;font-weight:600;
+    border-radius:999px;padding:8px 18px;
+  }
+
+  /* Onglets */
+  .onglets{
+    display:flex;gap:10px;justify-content:center;flex-wrap:wrap;
+    margin-bottom:34px;
+  }
+  .onglet{
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    color:var(--gris);
+    border-radius:999px;
+    padding:11px 22px;
+    font-size:14.5px;
+    font-weight:600;
+    font-family:'Inter',sans-serif;
+    cursor:pointer;
+    transition:all .18s;
+    display:inline-flex;align-items:center;gap:8px;
+  }
+  .onglet:hover{border-color:var(--violet);color:var(--blanc)}
+  .onglet.actif{
+    background:linear-gradient(135deg,var(--violet),var(--violet-fonce));
+    border-color:transparent;color:#fff;
+    box-shadow:0 8px 22px rgba(139,92,246,.35);
+  }
+
+  /* Panneaux d'outils */
+  .panneaux{flex:1;padding-bottom:80px}
+  .panneau{display:none}
+  .panneau.actif{display:block;animation:apparaitre .35s ease}
+  @keyframes apparaitre{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+  .carte-outil{
+    max-width:860px;margin:0 auto;
+    background:rgba(16,16,28,.75);
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:22px;
+    padding:38px;
+    box-shadow:var(--ombre);
+  }
+  .carte-outil h2{font-size:26px;margin-bottom:8px}
+  .carte-outil .desc-outil{color:var(--gris);font-size:15px;margin-bottom:26px}
+
+  /* Zone de dépôt */
+  .drop{
+    border:2px dashed rgba(139,92,246,.45);
+    border-radius:16px;
+    padding:44px 24px;
+    text-align:center;
+    cursor:pointer;
+    transition:all .2s;
+    background:rgba(139,92,246,.05);
+    position:relative;
+  }
+  .drop:hover,.drop.survol{border-color:var(--violet);background:rgba(139,92,246,.12)}
+  .drop .icone{font-size:38px;margin-bottom:12px}
+  .drop .titre-drop{font-weight:700;font-size:16.5px;margin-bottom:6px}
+  .drop .sous-drop{color:var(--gris-2);font-size:13.5px}
+  .drop input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+  .drop.multiple input[type=file]{width:100%;height:100%}
+
+  /* Liste de fichiers */
+  .fichiers{margin-top:22px;display:none}
+  .fichiers.visible{display:block}
+  .fichier-ligne{
+    display:flex;align-items:center;gap:12px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:12px;
+    padding:11px 14px;margin-bottom:9px;
+  }
+  .fichier-ligne .nom{font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60%}
+  .fichier-ligne .taille{font-size:11.5px;color:var(--gris-2);white-space:nowrap}
+  .fichier-ligne .etat{margin-left:auto;font-size:11.5px;font-weight:700;white-space:nowrap}
+  .fichier-ligne .etat.ok{color:var(--vert)}
+  .fichier-ligne .etat.err{color:var(--rouge)}
+  .fichier-ligne .suppr{
+    background:none;border:none;color:var(--gris-2);font-size:16px;cursor:pointer;
+    padding:2px 6px;border-radius:6px;flex-shrink:0;
+  }
+  .fichier-ligne .suppr:hover{color:var(--rouge);background:rgba(248,113,113,.1)}
+
+  /* Options */
+  .options{
+    display:grid;grid-template-columns:1fr 1fr;gap:18px;
+    margin-top:24px;
+  }
+  .option label{
+    display:block;font-size:13px;font-weight:600;color:var(--gris);
+    margin-bottom:7px;
+  }
+  .option select,.option input[type=number]{
+    width:100%;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:10px;
+    padding:11px 14px;
+    color:var(--blanc);
+    font-size:14.5px;
+    font-family:'Inter',sans-serif;
+    outline:none;
+  }
+  .option select:focus,.option input[type=number]:focus{border-color:var(--violet);box-shadow:0 0 0 3px rgba(139,92,246,.2)}
+  .option select option{background:var(--noir-2);color:var(--blanc)}
+  @media(max-width:640px){.options{grid-template-columns:1fr}}
+
+  /* Zone résultat */
+  .resultat{
+    display:none;
+    margin-top:24px;
+    background:rgba(52,211,153,.07);
+    border:1px solid rgba(52,211,153,.3);
+    border-radius:14px;
+    padding:20px;
+  }
+  .resultat.visible{display:block}
+  .resultat .ligne-resultat{
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  }
+  .resultat .infos{flex:1;min-width:200px;font-size:14px;color:#a7f3d0}
+  .resultat .infos b{color:#d1fae5;font-size:15px}
+  .resultat .infos .detail{color:var(--gris);font-size:12.5px;margin-top:3px}
+  .apercu-texte{
+    margin-top:14px;
+    background:rgba(10,10,18,.6);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:10px;
+    padding:16px;
+    max-height:260px;
+    overflow-y:auto;
+    font-size:13px;
+    color:var(--gris);
+    white-space:pre-wrap;
+    font-family:ui-monospace,Menlo,monospace;
+  }
+  .apercu-img{
+    margin-top:14px;
+    max-height:280px;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,.1);
+    display:block;
+  }
+
+  .barre-progression{
+    margin-top:18px;
+    height:6px;
+    border-radius:999px;
+    background:rgba(255,255,255,.08);
+    overflow:hidden;
+    display:none;
+  }
+  .barre-progression.visible{display:block}
+  .barre-progression .remplissage{
+    height:100%;width:0;
+    background:linear-gradient(90deg,var(--violet),var(--peche));
+    border-radius:999px;
+    transition:width .3s ease;
+  }
+
+  /* Actions */
+  .actions{
+    display:flex;gap:14px;flex-wrap:wrap;
+    margin-top:28px;
+  }
+
+  .message-erreur{
+    display:none;
+    margin-top:18px;
+    background:rgba(248,113,113,.09);
+    border:1px solid rgba(248,113,113,.35);
+    color:#fecaca;
+    border-radius:12px;
+    padding:14px 18px;
+    font-size:14px;
+  }
+  .message-erreur.visible{display:block}
+
+  /* Modale upgrade */
+  .voile{
+    display:none;
+    position:fixed;inset:0;z-index:200;
+    background:rgba(5,5,10,.8);
+    backdrop-filter:blur(6px);
+    align-items:center;justify-content:center;
+    padding:20px;
+  }
+  .voile.visible{display:flex}
+  .modale{
+    background:linear-gradient(180deg,var(--noir-3),var(--noir-2));
+    border:1px solid rgba(139,92,246,.4);
+    border-radius:22px;
+    max-width:560px;
+    width:100%;
+    padding:38px;
+    box-shadow:0 30px 80px rgba(0,0,0,.6);
+    position:relative;
+    animation:apparaitre .3s ease;
+  }
+  .modale-fermer{
+    position:absolute;top:16px;right:16px;
+    background:none;border:none;color:var(--gris-2);
+    font-size:20px;cursor:pointer;padding:6px;
+  }
+  .modale-fermer:hover{color:var(--blanc)}
+  .modale .icone-modale{
+    width:56px;height:56px;border-radius:16px;
+    background:linear-gradient(135deg,rgba(255,176,138,.2),rgba(139,92,246,.2));
+    border:1px solid rgba(255,176,138,.4);
+    display:flex;align-items:center;justify-content:center;
+    font-size:26px;margin-bottom:18px;
+  }
+  .modale h3{font-size:24px;margin-bottom:10px}
+  .modale > p{color:var(--gris);font-size:15px;margin-bottom:22px}
+  .modale .plans{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px}
+  .plan-mini{
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:14px;
+    padding:18px;
+    text-align:center;
+  }
+  .plan-mini.mis-en-avant{
+    border:2px solid var(--violet);
+    background:linear-gradient(180deg,rgba(139,92,246,.12),rgba(16,16,28,.6));
+    position:relative;
+  }
+  .plan-mini .etiquette{
+    position:absolute;top:-11px;left:50%;transform:translateX(-50%);
+    background:linear-gradient(135deg,var(--peche),#ff9d6b);
+    color:#2a1205;font-size:10.5px;font-weight:800;text-transform:uppercase;
+    letter-spacing:.05em;padding:4px 12px;border-radius:999px;white-space:nowrap;
+  }
+  .plan-mini .nom{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;margin-bottom:4px}
+  .plan-mini .prix{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700}
+  .plan-mini .prix small{font-size:13px;color:var(--gris)}
+  .plan-mini .periode{font-size:12px;color:var(--gris-2)}
+  .modale .btn{width:100%}
+  .modale .note{text-align:center;font-size:12.5px;color:var(--gris-2);margin-top:14px}
+  @media(max-width:560px){
+    .modale{padding:28px 22px}
+    .modale .plans{grid-template-columns:1fr}
+  }
+
+  /* Footer */
+  .footer{
+    border-top:1px solid rgba(255,255,255,.07);
+    background:rgba(10,10,18,.8);
+    padding:26px 0;
+    position:relative;z-index:1;
+  }
+  .footer-inner{
+    display:flex;justify-content:space-between;align-items:center;
+    flex-wrap:wrap;gap:12px;
+    font-size:13px;color:var(--gris-2);
+  }
+  .footer-inner a{color:var(--gris)}
+  .footer-inner a:hover{color:var(--peche)}
+  .footer-inner .securite{display:flex;align-items:center;gap:8px}
+
+  @media(max-width:640px){
+    .compteur{display:none}
+    .carte-outil{padding:26px 20px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .panneau.actif{animation:none}
+    html{scroll-behavior:auto}
+  }
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-badge">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M12 2a7 7 0 0 0-7 7v4H4a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1V9a7 7 0 0 0-7-7Zm-4 7a4 4 0 1 1 8 0v4H8V9Z" fill="#fff"/></svg>
+      </span>
+      Outils Locaux
+    </a>
+    <div class="nav-droite">
+      <span class="compteur" id="compteur-affichage">⚡ <span id="compteur-texte">5 conversions gratuites</span></span>
+      <a href="index.html#commander" class="btn btn-primaire" style="padding:9px 20px;font-size:14px">Passer au Pro</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Entête -->
+<header class="tete-page">
+  <div class="conteneur">
+    <h1>Des outils puissants, <span class="gradient">100 % sur votre appareil.</span></h1>
+    <p>Choisissez un outil, déposez vos fichiers, téléchargez le résultat. Rien n'est envoyé sur Internet : tout se passe dans votre navigateur.</p>
+    <div class="garantie-local">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Traitement local garanti — aucune donnée envoyée
+    </div>
+  </div>
+</header>
+
+<!-- Onglets -->
+<nav class="onglets" aria-label="Choix de l'outil">
+  <button class="onglet actif" type="button" data-outil="fusion">📄 Fusionner des PDF</button>
+  <button class="onglet" type="button" data-outil="imagepdf">🖼️ Image → PDF</button>
+  <button class="onglet" type="button" data-outil="reduire">📉 Réduire une image</button>
+  <button class="onglet" type="button" data-outil="texte">📝 Extraire le texte d'un PDF</button>
+</nav>
+
+<main class="panneaux">
+  <div class="conteneur">
+
+    <!-- ==================== FUSION PDF ==================== -->
+    <section class="panneau actif" id="panneau-fusion">
+      <div class="carte-outil">
+        <h2>Fusionner des PDF</h2>
+        <p class="desc-outil">Sélectionnez plusieurs fichiers PDF dans l'ordre souhaité. Ils sont fusionnés sur votre appareil en un seul document.</p>
+        <div class="drop multiple" id="drop-fusion">
+          <input type="file" id="input-fusion" accept="application/pdf,.pdf" multiple>
+          <div class="icone">📄</div>
+          <div class="titre-drop">Glissez-déposez vos PDF ici</div>
+          <div class="sous-drop">ou cliquez pour parcourir · plusieurs fichiers acceptés · 100 % local</div>
+        </div>
+        <div class="fichiers" id="fichiers-fusion"></div>
+        <div class="actions">
+          <button class="btn btn-primaire" type="button" id="btn-fusion" disabled>Fusionner en local</button>
+        </div>
+        <div class="barre-progression" id="progression-fusion"><div class="remplissage"></div></div>
+        <div class="message-erreur" id="erreur-fusion"></div>
+        <div class="resultat" id="resultat-fusion">
+          <div class="ligne-resultat">
+            <div class="infos">
+              <b>PDF fusionné avec succès !</b>
+              <div class="detail" id="detail-fusion"></div>
+            </div>
+            <a class="btn btn-peche" id="telecharger-fusion" download>⬇ Télécharger le PDF fusionné</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== IMAGE → PDF ==================== -->
+    <section class="panneau" id="panneau-imagepdf">
+      <div class="carte-outil">
+        <h2>Convertir une image en PDF</h2>
+        <p class="desc-outil">Transformez une image (PNG, JPG, WebP) en document PDF. Utile pour scanner, signer ou archiver proprement.</p>
+        <div class="drop" id="drop-imagepdf">
+          <input type="file" id="input-imagepdf" accept="image/png,image/jpeg,image/webp,image/jpg" multiple>
+          <div class="icone">🖼️</div>
+          <div class="titre-drop">Glissez-déposez une ou plusieurs images</div>
+          <div class="sous-drop">ou cliquez pour parcourir · chaque image devient une page PDF</div>
+        </div>
+        <div class="fichiers" id="fichiers-imagepdf"></div>
+        <div class="options">
+          <div class="option">
+            <label for="imagepdf-orientation">Orientation de la page</label>
+            <select id="imagepdf-orientation">
+              <option value="auto">Automatique (selon l'image)</option>
+              <option value="portrait">Portrait</option>
+              <option value="paysage">Paysage</option>
+            </select>
+          </div>
+          <div class="option">
+            <label for="imagepdf-marge">Marge (px)</label>
+            <input type="number" id="imagepdf-marge" min="0" max="120" value="0">
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primaire" type="button" id="btn-imagepdf" disabled>Convertir en PDF</button>
+        </div>
+        <div class="barre-progression" id="progression-imagepdf"><div class="remplissage"></div></div>
+        <div class="message-erreur" id="erreur-imagepdf"></div>
+        <div class="resultat" id="resultat-imagepdf">
+          <div class="ligne-resultat">
+            <div class="infos">
+              <b>PDF généré !</b>
+              <div class="detail" id="detail-imagepdf"></div>
+            </div>
+            <a class="btn btn-peche" id="telecharger-imagepdf" download>⬇ Télécharger le PDF</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== RÉDUIRE IMAGE ==================== -->
+    <section class="panneau" id="panneau-reduire">
+      <div class="carte-outil">
+        <h2>Réduire une image</h2>
+        <p class="desc-outil">Compressez une image (PNG, JPG, WebP) pour l'envoyer par email ou la publier sur le web. Le traitement se fait sur votre appareil.</p>
+        <div class="drop multiple" id="drop-reduire">
+          <input type="file" id="input-reduire" accept="image/png,image/jpeg,image/webp,image/jpg" multiple>
+          <div class="icone">📉</div>
+          <div class="titre-drop">Glissez-déposez une ou plusieurs images</div>
+          <div class="sous-drop">ou cliquez pour parcourir · plusieurs fichiers acceptés</div>
+        </div>
+        <div class="fichiers" id="fichiers-reduire"></div>
+        <div class="options">
+          <div class="option">
+            <label for="reduire-qualite">Qualité</label>
+            <select id="reduire-qualite">
+              <option value="0.85">Haute (85 %)</option>
+              <option value="0.7" selected>Équilibrée (70 %)</option>
+              <option value="0.5">Forte compression (50 %)</option>
+              <option value="0.3">Maximale (30 %)</option>
+            </select>
+          </div>
+          <div class="option">
+            <label for="reduire-largeur">Largeur max (px)</label>
+            <input type="number" id="reduire-largeur" min="100" max="8000" value="1920" step="10">
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primaire" type="button" id="btn-reduire" disabled>Réduire les images</button>
+        </div>
+        <div class="barre-progression" id="progression-reduire"><div class="remplissage"></div></div>
+        <div class="message-erreur" id="erreur-reduire"></div>
+        <div class="resultat" id="resultat-reduire">
+          <div class="ligne-resultat">
+            <div class="infos">
+              <b>Images réduites !</b>
+              <div class="detail" id="detail-reduire"></div>
+            </div>
+            <a class="btn btn-peche" id="telecharger-reduire" download>⬇ Télécharger les images réduites</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== EXTRACTION TEXTE ==================== -->
+    <section class="panneau" id="panneau-texte">
+      <div class="carte-outil">
+        <h2>Extraire le texte d'un PDF</h2>
+        <p class="desc-outil">Récupérez le texte d'un PDF (facture, rapport, contrat) pour le copier, le réutiliser ou l'analyser. Aucun envoi : l'extraction se fait dans votre navigateur.</p>
+        <div class="drop" id="drop-texte">
+          <input type="file" id="input-texte" accept="application/pdf,.pdf">
+          <div class="icone">📝</div>
+          <div class="titre-drop">Glissez-déposez votre PDF ici</div>
+          <div class="sous-drop">ou cliquez pour parcourir · un seul fichier · 100 % local</div>
+        </div>
+        <div class="fichiers" id="fichiers-texte"></div>
+        <div class="actions">
+          <button class="btn btn-primaire" type="button" id="btn-texte" disabled>Extraire le texte</button>
+        </div>
+        <div class="barre-progression" id="progression-texte"><div class="remplissage"></div></div>
+        <div class="message-erreur" id="erreur-texte"></div>
+        <div class="resultat" id="resultat-texte">
+          <div class="ligne-resultat">
+            <div class="infos">
+              <b>Texte extrait !</b>
+              <div class="detail" id="detail-texte"></div>
+            </div>
+            <button class="btn btn-peche" type="button" id="copier-texte">📋 Copier le texte</button>
+            <a class="btn btn-secondaire" id="telecharger-texte" download>⬇ Télécharger en .txt</a>
+          </div>
+          <div class="apercu-texte" id="apercu-texte"></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="conteneur">
+    <div class="footer-inner">
+      <span>© 2026 Outils Locaux — <a href="index.html">Page d'accueil</a></span>
+      <span class="securite">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2a7 7 0 0 0-7 7v4H4a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1V9a7 7 0 0 0-7-7Z" stroke="#8b5cf6" stroke-width="1.8"/></svg>
+        Aucune donnée envoyée · RGPD-friendly
+      </span>
+    </div>
+  </div>
+</footer>
+
+<!-- ==================== MODALE UPGRADE ==================== -->
+<div class="voile" id="voile-upgrade" role="dialog" aria-modal="true" aria-labelledby="titre-modale">
+  <div class="modale">
+    <button class="modale-fermer" type="button" id="fermer-modale" aria-label="Fermer">✕</button>
+    <div class="icone-modale">🔒</div>
+    <h3 id="titre-modale">Limite gratuite atteinte</h3>
+    <p>Vous avez utilisé vos <b>5 conversions gratuites</b> de ce mois. Passez au plan Pro pour des conversions illimitées et le traitement par lots : vos fichiers resteront 100 % sur votre appareil.</p>
+    <div class="plans">
+      <div class="plan-mini mis-en-avant">
+        <div class="etiquette">★ Le plus choisi</div>
+        <div class="nom">Pro</div>
+        <div class="prix">9 €<small>/mois</small></div>
+        <div class="periode">Illimité · lot d'images · sans engagement</div>
+      </div>
+      <div class="plan-mini">
+        <div class="nom">Business</div>
+        <div class="prix">19 €<small>/mois</small></div>
+        <div class="periode">Équipes · 5 utilisateurs · facture</div>
+      </div>
+    </div>
+    <a class="btn btn-peche" href="index.html#commander" onclick="prechoisirOffre('Pro')">Choisir Pro — 9 €/mois</a>
+    <div class="note">La résiliation est possible à tout moment. Paiement par virement ou message privé.</div>
+  </div>
+</div>
+
+<!-- Bibliothèques chargées à la demande (aucun fichier utilisateur n'est envoyé) -->
+<script>
+/* =====================================================================
+   OUTILS LOCAUX — moteur 100 % local
+   - Fusion PDF      : pdf-lib (CDN, chargé au premier usage)
+   - Image → PDF     : canvas + pdf-lib
+   - Réduction image : canvas
+   - Extraction texte: pdf.js (CDN, chargé au premier usage)
+   Aucun fichier n'est envoyé sur le réseau : tout est traité ici.
+   ===================================================================== */
+
+var PLAN_GRATUIT = 5;
+
+/* ---------- Compteur de conversions (localStorage) ---------- */
+function lireMois() {
+  var d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+}
+function lireCompteur() {
+  try {
+    var brut = JSON.parse(localStorage.getItem('ol_usage') || 'null');
+    if (!brut || brut.mois !== lireMois()) {
+      return { mois: lireMois(), n: 0 };
+    }
+    return brut;
+  } catch (e) {
+    return { mois: lireMois(), n: 0 };
+  }
+}
+function ecrireCompteur(c) {
+  try { localStorage.setItem('ol_usage', JSON.stringify(c)); } catch (e) {}
+}
+function afficherCompteur() {
+  var c = lireCompteur();
+  var restantes = Math.max(0, PLAN_GRATUIT - c.n);
+  var el = document.getElementById('compteur-texte');
+  if (el) {
+    el.textContent = restantes === 0
+      ? 'Limite mensuelle atteinte'
+      : (restantes === 1 ? '1 conversion gratuite restante' : restantes + ' conversions gratuites restantes');
+  }
+}
+function autoriserConversion() {
+  var c = lireCompteur();
+  return c.n < PLAN_GRATUIT;
+}
+function compterConversion() {
+  var c = lireCompteur();
+  c.n += 1;
+  ecrireCompteur(c);
+  afficherCompteur();
+  if (c.n >= PLAN_GRATUIT) {
+    var voile = document.getElementById('voile-upgrade');
+    var titre = document.getElementById('titre-modale');
+    titre.textContent = 'Limite gratuite atteinte';
+    voile.classList.add('visible');
+  }
+}
+function prechoisirOffre(offre) {
+  try { localStorage.setItem('ol_offre_souhaitee', offre); } catch (e) {}
+}
+document.getElementById('fermer-modale').addEventListener('click', function () {
+  document.getElementById('voile-upgrade').classList.remove('visible');
+});
+document.getElementById('voile-upgrade').addEventListener('click', function (e) {
+  if (e.target === this) this.classList.remove('visible');
+});
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') document.getElementById('voile-upgrade').classList.remove('visible');
+});
+
+/* ---------- Chargement des bibliothèques (CDN) ---------- */
+function chargerScript(src) {
+  return new Promise(function (resolve, reject) {
+    if (window.__scripts && window.__scripts[src]) { resolve(); return; }
+    var s = document.createElement('script');
+    s.src = src;
+    s.onload = function () {
+      window.__scripts = window.__scripts || {};
+      window.__scripts[src] = true;
+      resolve();
+    };
+    s.onerror = function () { reject(new Error('Impossible de charger ' + src)); };
+    document.head.appendChild(s);
+  });
+}
+var PDFLIB_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js';
+var PDFJS_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+var PDFJS_WORKER = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+function chargerPdfLib() {
+  return chargerScript(PDFLIB_CDN).then(function () {
+    if (!window.PDFLib) throw new Error('Bibliothèque PDF indisponible.');
+  });
+}
+function chargerPdfJs() {
+  return chargerScript(PDFJS_CDN).then(function () {
+    if (window.pdfjsLib) {
+      try { window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_WORKER; } catch (e) {}
+    }
+  });
+}
+
+/* ---------- Utilitaires ---------- */
+function formatTaille(octets) {
+  if (octets < 1024) return octets + ' o';
+  if (octets < 1048576) return (octets / 1024).toFixed(1).replace('.', ',') + ' Ko';
+  return (octets / 1048576).toFixed(2).replace('.', ',') + ' Mo';
+}
+function nomSansExtension(nom) {
+  var i = nom.lastIndexOf('.');
+  return i > 0 ? nom.slice(0, i) : nom;
+}
+function afficherErreur(id, message) {
+  var el = document.getElementById(id);
+  el.textContent = message;
+  el.classList.add('visible');
+  setTimeout(function () { el.classList.remove('visible'); }, 6000);
+}
+function telechargerBlob(blob, nomFichier) {
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = nomFichier;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function () {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 400);
+}
+function telechargerFichiers(liste) {
+  liste.forEach(function (f) { telechargerBlob(f.blob, f.nom); });
+}
+
+/* ---------- Gestion générique des dépôts ---------- */
+function initDrop(idInput, idDrop, idListe, callback) {
+  var input = document.getElementById(idInput);
+  var drop = document.getElementById(idDrop);
+  var liste = document.getElementById(idListe);
+  var fichiers = [];
+
+  function rendre() {
+    if (fichiers.length === 0) {
+      liste.classList.remove('visible');
+      liste.innerHTML = '';
+      callback(fichiers);
+      return;
+    }
+    liste.classList.add('visible');
+    liste.innerHTML = '';
+    fichiers.forEach(function (f, i) {
+      var ligne = document.createElement('div');
+      ligne.className = 'fichier-ligne';
+      var etat = f.erreur
+        ? '<span class="etat err">' + f.erreur + '</span>'
+        : '<span class="etat ok">✓ Prêt</span>';
+      ligne.innerHTML =
+        '<span class="nom" title="' + f.nom.replace(/"/g, '&quot;') + '">' + f.nom.replace(/</g, '&lt;') + '</span>' +
+        '<span class="taille">' + formatTaille(f.taille) + '</span>' +
+        etat +
+        '<button class="suppr" type="button" aria-label="Retirer ' + f.nom.replace(/"/g, '&quot;') + '">✕</button>';
+      ligne.querySelector('.suppr').addEventListener('click', function () {
+        fichiers.splice(i, 1);
+        rendre();
+      });
+      liste.appendChild(ligne);
+    });
+    callback(fichiers);
+  }
+
+  function ajouter(listeFichiers) {
+    Array.prototype.forEach.call(listeFichiers, function (fichier) {
+      if (!fichier) return;
+      // Clone Blob indépendant : vider input.value détache les objets File d'origine.
+      var clone = fichier.slice(0, fichier.size, fichier.type);
+      fichiers.push({ nom: fichier.name, taille: fichier.size, fichier: clone, erreur: null });
+    });
+    rendre();
+  }
+
+  input.addEventListener('change', function () {
+    ajouter(input.files);
+    input.value = '';
+  });
+  ['dragenter', 'dragover'].forEach(function (ev) {
+    drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('survol'); });
+  });
+  ['dragleave', 'drop'].forEach(function (ev) {
+    drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove('survol'); });
+  });
+  drop.addEventListener('drop', function (e) {
+    if (e.dataTransfer && e.dataTransfer.files) ajouter(e.dataTransfer.files);
+  });
+
+  return {
+    obtenir: function () { return fichiers; },
+    vider: function () { fichiers = []; rendre(); },
+    rendre: rendre
+  };
+}
+
+/* ==================== OUTIL 1 : FUSION PDF ==================== */
+var fusion = initDrop('input-fusion', 'drop-fusion', 'fichiers-fusion', function (fichiers) {
+  document.getElementById('btn-fusion').disabled = fichiers.length < 2 ||
+    fichiers.some(function (f) { return f.erreur; });
+});
+
+document.getElementById('btn-fusion').addEventListener('click', function () {
+  var fichiers = fusion.obtenir().filter(function (f) { return !f.erreur; });
+  if (fichiers.length < 2) { afficherErreur('erreur-fusion', 'Sélectionnez au moins deux PDF à fusionner.'); return; }
+  if (!autoriserConversion()) { ouvrirModale(); return; }
+
+  var btn = this;
+  var progression = document.getElementById('progression-fusion');
+  var remplissage = progression.querySelector('.remplissage');
+  btn.disabled = true;
+  progression.classList.add('visible');
+  remplissage.style.width = '15%';
+
+  chargerPdfLib().then(function () {
+    remplissage.style.width = '40%';
+    return Promise.all(fichiers.map(function (f) {
+      return f.fichier.arrayBuffer();
+    })).then(function (buffers) {
+      var PDFDocument = window.PDFLib.PDFDocument;
+      return PDFDocument.create().then(function (docFinal) {
+        var total = buffers.length;
+        var fait = 0;
+        var chaine = Promise.resolve();
+        buffers.forEach(function (buf) {
+          chaine = chaine.then(function () {
+            return PDFDocument.load(buf, { ignoreEncryption: true }).then(function (docSrc) {
+              return docFinal.copyPages(docSrc, docSrc.getPageIndices()).then(function (pages) {
+                pages.forEach(function (p) { docFinal.addPage(p); });
+                fait++;
+                remplissage.style.width = String(40 + Math.round(fait / total * 40)) + '%';
+              });
+            }).catch(function () {
+              throw new Error('Un des PDF est protégé ou illisible : impossible de le fusionner.');
+            });
+          });
+        });
+        return chaine.then(function () {
+          remplissage.style.width = '90%';
+          return docFinal.save();
+        });
+      });
+    });
+  }).then(function (octets) {
+    var blob = new Blob([octets], { type: 'application/pdf' });
+    document.getElementById('detail-fusion').textContent =
+      fichiers.length + ' fichiers fusionnés · ' + formatTaille(blob.size) + ' · généré en local';
+    document.getElementById('resultat-fusion').classList.add('visible');
+    var lien = document.getElementById('telecharger-fusion');
+    lien.href = URL.createObjectURL(blob);
+    lien.setAttribute('download', 'fusion_' + Date.now() + '.pdf');
+    remplissage.style.width = '100%';
+    compterConversion();
+    fusion.vider();
+  }).catch(function (err) {
+    afficherErreur('erreur-fusion', err.message || 'Une erreur est survenue pendant la fusion.');
+  }).finally(function () {
+    btn.disabled = false;
+    setTimeout(function () { progression.classList.remove('visible'); remplissage.style.width = '0'; }, 600);
+  });
+});
+
+/* ==================== OUTIL 2 : IMAGE → PDF ==================== */
+var imagepdf = initDrop('input-imagepdf', 'drop-imagepdf', 'fichiers-imagepdf', function (fichiers) {
+  document.getElementById('btn-imagepdf').disabled = fichiers.length === 0 ||
+    fichiers.some(function (f) { return f.erreur; });
+});
+
+function chargerImage(fichier) {
+  return new Promise(function (resolve, reject) {
+    var url = URL.createObjectURL(fichier);
+    var img = new Image();
+    img.onload = function () { resolve(img); URL.revokeObjectURL(url); };
+    img.onerror = function () { reject(new Error('Image illisible : ' + fichier.name)); URL.revokeObjectURL(url); };
+    img.src = url;
+  });
+}
+
+document.getElementById('btn-imagepdf').addEventListener('click', function () {
+  var fichiers = imagepdf.obtenir().filter(function (f) { return !f.erreur; });
+  if (fichiers.length === 0) { afficherErreur('erreur-imagepdf', 'Sélectionnez au moins une image.'); return; }
+  if (!autoriserConversion()) { ouvrirModale(); return; }
+
+  var btn = this;
+  var progression = document.getElementById('progression-imagepdf');
+  var remplissage = progression.querySelector('.remplissage');
+  btn.disabled = true;
+  progression.classList.add('visible');
+  remplissage.style.width = '10%';
+
+  chargerPdfLib().then(function () {
+    remplissage.style.width = '30%';
+    var PDFDocument = window.PDFLib.PDFDocument;
+    var orientation = document.getElementById('imagepdf-orientation').value;
+    var marge = parseInt(document.getElementById('imagepdf-marge').value, 10) || 0;
+    return PDFDocument.create().then(function (doc) {
+      var total = fichiers.length;
+      var fait = 0;
+      var chaine = Promise.resolve();
+      fichiers.forEach(function (f) {
+        chaine = chaine.then(function () {
+          return chargerImage(f.fichier).then(function (img) {
+            var w = img.naturalWidth || img.width;
+            var h = img.naturalHeight || img.height;
+            var portrait = h >= w;
+            var pageW = portrait ? 595 : 842;
+            var pageH = portrait ? 842 : 595;
+            if (orientation === 'portrait') { pageW = 595; pageH = 842; }
+            if (orientation === 'paysage') { pageW = 842; pageH = 595; }
+            var dispoW = pageW - marge * 2;
+            var dispoH = pageH - marge * 2;
+            var ratio = Math.min(dispoW / w, dispoH / h, 1);
+            var imgW = Math.round(w * ratio);
+            var imgH = Math.round(h * ratio);
+            var x = Math.round((pageW - imgW) / 2);
+            var y = Math.round((pageH - imgH) / 2);
+
+            var canvas = document.createElement('canvas');
+            canvas.width = imgW;
+            canvas.height = imgH;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, imgW, imgH);
+
+            var embed = f.fichier.type === 'image/png'
+              ? doc.embedPng(canvas.toDataURL('image/png'))
+              : doc.embedJpg(canvas.toDataURL('image/jpeg', 0.92));
+
+            return embed.then(function (image) {
+              var page = doc.addPage([pageW, pageH]);
+              page.drawImage(image, { x: x, y: y, width: imgW, height: imgH });
+              fait++;
+              remplissage.style.width = String(30 + Math.round(fait / total * 55)) + '%';
+            });
+          });
+        });
+      });
+      return chaine.then(function () {
+        remplissage.style.width = '92%';
+        return doc.save();
+      });
+    });
+  }).then(function (octets) {
+    var blob = new Blob([octets], { type: 'application/pdf' });
+    document.getElementById('detail-imagepdf').textContent =
+      fichiers.length + ' image' + (fichiers.length > 1 ? 's' : '') + ' convertie' + (fichiers.length > 1 ? 's' : '') +
+      ' · ' + formatTaille(blob.size) + ' · généré en local';
+    document.getElementById('resultat-imagepdf').classList.add('visible');
+    var lien = document.getElementById('telecharger-imagepdf');
+    lien.href = URL.createObjectURL(blob);
+    lien.setAttribute('download', 'images_' + Date.now() + '.pdf');
+    remplissage.style.width = '100%';
+    compterConversion();
+    imagepdf.vider();
+  }).catch(function (err) {
+    afficherErreur('erreur-imagepdf', err.message || 'Une erreur est survenue pendant la conversion.');
+  }).finally(function () {
+    btn.disabled = false;
+    setTimeout(function () { progression.classList.remove('visible'); remplissage.style.width = '0'; }, 600);
+  });
+});
+
+/* ==================== OUTIL 3 : RÉDUIRE IMAGE ==================== */
+var reduire = initDrop('input-reduire', 'drop-reduire', 'fichiers-reduire', function (fichiers) {
+  document.getElementById('btn-reduire').disabled = fichiers.length === 0 ||
+    fichiers.some(function (f) { return f.erreur; });
+});
+
+function reduireUneImage(fichier, nomFichier, qualite, largeurMax) {
+  return chargerImage(fichier).then(function (img) {
+    var w = img.naturalWidth || img.width;
+    var h = img.naturalHeight || img.height;
+    var ratio = Math.min(1, largeurMax / w);
+    var nw = Math.max(1, Math.round(w * ratio));
+    var nh = Math.max(1, Math.round(h * ratio));
+    var canvas = document.createElement('canvas');
+    canvas.width = nw;
+    canvas.height = nh;
+    var ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, nw, nh);
+    var type = (fichier.type === 'image/png') ? 'image/png' : 'image/jpeg';
+    var octets = canvas.toDataURL(type, qualite);
+    var binaire = atob(octets.split(',')[1]);
+    var tableau = new Uint8Array(binaire.length);
+    for (var i = 0; i < binaire.length; i++) tableau[i] = binaire.charCodeAt(i);
+    var extension = type === 'image/png' ? '.png' : '.jpg';
+    return {
+      blob: new Blob([tableau], { type: type }),
+      nom: nomSansExtension(nomFichier) + '_reduite' + extension
+    };
+  });
+}
+
+document.getElementById('btn-reduire').addEventListener('click', function () {
+  var fichiers = reduire.obtenir().filter(function (f) { return !f.erreur; });
+  if (fichiers.length === 0) { afficherErreur('erreur-reduire', 'Sélectionnez au moins une image.'); return; }
+  if (!autoriserConversion()) { ouvrirModale(); return; }
+
+  var btn = this;
+  var progression = document.getElementById('progression-reduire');
+  var remplissage = progression.querySelector('.remplissage');
+  btn.disabled = true;
+  progression.classList.add('visible');
+  remplissage.style.width = '15%';
+
+  var qualite = parseFloat(document.getElementById('reduire-qualite').value);
+  var largeurMax = parseInt(document.getElementById('reduire-largeur').value, 10) || 1920;
+
+  Promise.all(fichiers.map(function (f) { return reduireUneImage(f.fichier, f.nom, qualite, largeurMax); }))
+    .then(function (liste) {
+      remplissage.style.width = '90%';
+      var tailleTotal = liste.reduce(function (s, f) { return s + f.blob.size; }, 0);
+      document.getElementById('detail-reduire').textContent =
+        fichiers.length + ' image' + (fichiers.length > 1 ? 's' : '') + ' réduite' + (fichiers.length > 1 ? 's' : '') +
+        ' · ' + formatTaille(tailleTotal) + ' au total · généré en local';
+      document.getElementById('resultat-reduire').classList.add('visible');
+      var lien = document.getElementById('telecharger-reduire');
+      lien.href = '#';
+      lien.onclick = function (e) {
+        e.preventDefault();
+        telechargerFichiers(liste);
+      };
+      remplissage.style.width = '100%';
+      compterConversion();
+      reduire.vider();
+    })
+    .catch(function (err) {
+      afficherErreur('erreur-reduire', err.message || 'Une erreur est survenue pendant la réduction.');
+    })
+    .finally(function () {
+      btn.disabled = false;
+      setTimeout(function () { progression.classList.remove('visible'); remplissage.style.width = '0'; }, 600);
+    });
+});
+
+/* ==================== OUTIL 4 : EXTRACTION TEXTE ==================== */
+var texte = initDrop('input-texte', 'drop-texte', 'fichiers-texte', function (fichiers) {
+  document.getElementById('btn-texte').disabled = fichiers.length === 0 ||
+    fichiers.some(function (f) { return f.erreur; });
+});
+
+document.getElementById('btn-texte').addEventListener('click', function () {
+  var fichiers = texte.obtenir().filter(function (f) { return !f.erreur; });
+  if (fichiers.length === 0) { afficherErreur('erreur-texte', 'Sélectionnez un PDF.'); return; }
+  if (!autoriserConversion()) { ouvrirModale(); return; }
+
+  var btn = this;
+  var progression = document.getElementById('progression-texte');
+  var remplissage = progression.querySelector('.remplissage');
+  btn.disabled = true;
+  progression.classList.add('visible');
+  remplissage.style.width = '20%';
+
+  chargerPdfJs().then(function () {
+    return fichiers[0].fichier.arrayBuffer().then(function (buffer) {
+      var pdfjs = window.pdfjsLib;
+      return pdfjs.getDocument({ data: new Uint8Array(buffer) }).promise.then(function (doc) {
+        remplissage.style.width = '50%';
+        var pages = [];
+        var chaine = Promise.resolve();
+        for (var i = 1; i <= doc.numPages; i++) {
+          (function (num) {
+            chaine = chaine.then(function () {
+              return doc.getPage(num).then(function (page) {
+                return page.getTextContent().then(function (contenu) {
+                  var lignes = contenu.items.map(function (item) {
+                    return ('str' in item) ? item.str : '';
+                  }).join(' ');
+                  pages.push(lignes);
+                  remplissage.style.width = String(50 + Math.round(num / doc.numPages * 40)) + '%';
+                });
+              });
+            });
+          })(i);
+        }
+        return chaine.then(function () { return pages.join('\n\n'); });
+      });
+    });
+  }).then(function (texteComplet) {
+    if (!texteComplet.trim()) {
+      throw new Error('Aucun texte trouvé : ce PDF est probablement un document scanné (image). L\'extraction de texte ne fonctionne que sur les PDF avec du texte sélectionnable.');
+    }
+    remplissage.style.width = '95%';
+    document.getElementById('apercu-texte').textContent = texteComplet;
+    document.getElementById('detail-texte').textContent =
+      texteComplet.length + ' caractères extraits · généré en local';
+    document.getElementById('resultat-texte').classList.add('visible');
+    var lien = document.getElementById('telecharger-texte');
+    var blob = new Blob([texteComplet], { type: 'text/plain;charset=utf-8' });
+    lien.href = URL.createObjectURL(blob);
+    lien.setAttribute('download', nomSansExtension(fichiers[0].nom) + '_texte.txt');
+    remplissage.style.width = '100%';
+    compterConversion();
+    texte.vider();
+  }).catch(function (err) {
+    afficherErreur('erreur-texte', err.message || 'Une erreur est survenue pendant l\'extraction.');
+  }).finally(function () {
+    btn.disabled = false;
+    setTimeout(function () { progression.classList.remove('visible'); remplissage.style.width = '0'; }, 600);
+  });
+});
+
+document.getElementById('copier-texte').addEventListener('click', function () {
+  var contenu = document.getElementById('apercu-texte').textContent;
+  if (!contenu) return;
+  var fait = false;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(contenu).then(function () {
+      fait = true;
+      var b = document.getElementById('copier-texte');
+      b.textContent = '✓ Copié !';
+      setTimeout(function () { b.textContent = '📋 Copier le texte'; }, 2000);
+    }).catch(function () {});
+  }
+  if (!fait) {
+    var zone = document.createElement('textarea');
+    zone.value = contenu;
+    document.body.appendChild(zone);
+    zone.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(zone);
+    var b2 = document.getElementById('copier-texte');
+    b2.textContent = '✓ Copié !';
+    setTimeout(function () { b2.textContent = '📋 Copier le texte'; }, 2000);
+  }
+});
+
+/* ==================== ONGLETS ==================== */
+var onglets = document.querySelectorAll('.onglet');
+onglets.forEach(function (onglet) {
+  onglet.addEventListener('click', function () {
+    onglets.forEach(function (o) { o.classList.remove('actif'); });
+    onglet.classList.add('actif');
+    document.querySelectorAll('.panneau').forEach(function (p) { p.classList.remove('actif'); });
+    document.getElementById('panneau-' + onglet.getAttribute('data-outil')).classList.add('actif');
+  });
+});
+
+/* ==================== MODALE (point d'entrée partagé) ==================== */
+function ouvrirModale() {
+  var voile = document.getElementById('voile-upgrade');
+  var titre = document.getElementById('titre-modale');
+  titre.textContent = 'Limite gratuite atteinte';
+  voile.classList.add('visible');
+}
+
+/* ---------- Pré-sélection d'offre sur la page d'accueil ---------- */
+(function () {
+  var souhaitee = null;
+  try { souhaitee = localStorage.getItem('ol_offre_souhaitee'); } catch (e) {}
+  if (souhaitee && document.getElementById('voile-upgrade')) {
+    var lien = document.querySelector('.modale a[href="index.html#commander"]');
+    if (lien) {
+      var texte = souhaitee === 'Business' ? 'Choisir Business — 19 €/mois' : 'Choisir Pro — 9 €/mois';
+      lien.textContent = texte;
+    }
+  }
+})();
+
+afficherCompteur();
+</script>
+</body>
+</html>
