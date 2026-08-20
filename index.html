@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Outils Locaux — Fusion PDF, image → PDF, compression : 100 % local, vos fichiers ne quittent jamais votre appareil</title>
+<title>Outils Locaux — Fusion PDF, image → PDF, compression 100 % locale</title>
 <meta name="description" content="Fusion PDF, conversion image → PDF, réduction d'image et extraction de texte : des outils 100 % locaux. Vos fichiers ne quittent jamais votre appareil. Gratuit (5 conversions/mois) ou Pro dès 9 €/mois.">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="fr_FR">
@@ -1583,12 +1583,12 @@ a{transition:color .3s ease}
     d.style.background='radial-gradient(circle,'+orbs[i]+',transparent 60%)';o.appendChild(d);}
   document.body.appendChild(o);
   addEventListener('scroll',function(){var h=document.documentElement;var sc=(h.scrollTop||document.body.scrollTop);var m=h.scrollHeight-h.clientHeight;p.style.width=(m>0?(sc/m*100):0)+'%';},{passive:true});
-  var sel=null;
+  var sel=".hero,.section,.choix-offres,.panneau-succes";
   if(!sel)return;
   var els=document.querySelectorAll(sel);
   if(!('IntersectionObserver' in window)){for(var i=0;i<els.length;i++)els[i].classList.add('f3-in');return;}
   for(var i=0;i<els.length;i++)els[i].classList.add('f3-reveal');
-  var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add('f3-in');io.unobserve(en.target);}});},{threshold:.1});
+  var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting||en.target.getBoundingClientRect().top<innerHeight){en.target.classList.add('f3-in');io.unobserve(en.target);}});},{threshold:.1});
   for(var i=0;i<els.length;i++)io.observe(els[i]);
 })();
 </script></body>
